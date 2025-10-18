@@ -10,14 +10,18 @@ class City(models.Model):
     name = models.CharField(max_length=50, verbose_name='Город')
 
 class Customer(AbstractUser):
-    city = models.ForeignKey(City, on_delete=models.PROTECT, related_name='cities', verbose_name='Город')
+    city = models.ForeignKey(City, on_delete=models.PROTECT, related_name='customers', verbose_name='Город')
     phone = models.CharField(max_length=15, verbose_name='Номер телефона')
-    tg_name = models.CharField(max_length=50, verbose_name='Имя пользователя Telegram')
-    tg_id = models.IntegerField(verbose_name='ID в Telegram')
-    status = models.ForeignKey(CustomerStatus, on_delete=models.PROTECT, related_name='customers', verbose_name='Статус пользователя')
+    tg_name = models.CharField(max_length=50, verbose_name='Имя пользователя Telegram', null=True)
+    tg_id = models.IntegerField(verbose_name='ID в Telegram', null=True)
+    status = models.ForeignKey(CustomerStatus, on_delete=models.PROTECT, related_name='customers', verbose_name='Статус пользователя', default=1)
+
+class GoodCategory(models.Model):
+    name = models.CharField(max_length=25, verbose_name='Категория товара', default='Одежда')
 
 class Good(models.Model):
     name = models.CharField(max_length=250, verbose_name='Название товара')
+    category = models.ForeignKey(GoodCategory, on_delete=models.PROTECT, related_name='good', verbose_name='Категория товара')
     description = models.TextField(verbose_name='Описание товара')
 
 class ImageStatus(models.Model):
@@ -37,7 +41,7 @@ class Advertisement(models.Model):
     description = models.TextField(verbose_name='Описание предложения')
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name='Стоимость предложения')
     moderate = models.BooleanField(default=False, verbose_name='Прошел модерацию')
-    city = models.ForeignKey(City, on_delete=models.PROTECT, related_name='cities', verbose_name='Город')
+    city = models.ForeignKey(City, on_delete=models.PROTECT, related_name='adv', verbose_name='Город')
 
 class OrderStatus(models.Model):
     name = models.CharField(max_length=50, verbose_name='Статус предложения')
