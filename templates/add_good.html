@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+  {% block content %}
+  <h1>Создание товара</h1>
+  <form action="" method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      {{ form.as_p }}
+      {{ formset.management_form }}
+
+      {% for img_form in formset %}
+          <fieldset>
+              {{ img_form.as_table }}
+          </fieldset>
+      {% endfor %}
+
+      <input type="submit" value="Создать товар"/>
+  </form>
+  {% endblock %}
+</body>
+</html>

@@ -6,8 +6,14 @@ from django.contrib.auth.models import AbstractUser
 class CustomerStatus(models.Model):
     name = models.CharField(max_length=50, verbose_name='Название статуса')
 
+    def __str__(self):
+        return self.name
+
 class City(models.Model):
     name = models.CharField(max_length=50, verbose_name='Город')
+
+    def __str__(self):
+        return self.name
 
 class Customer(AbstractUser):
     city = models.ForeignKey(City, on_delete=models.PROTECT, related_name='customers', verbose_name='Город')
@@ -19,6 +25,9 @@ class Customer(AbstractUser):
 class GoodCategory(models.Model):
     name = models.CharField(max_length=25, verbose_name='Категория товара', default='Одежда')
 
+    def __str__(self):
+        return self.name
+
 class Good(models.Model):
     name = models.CharField(max_length=250, verbose_name='Название товара')
     category = models.ForeignKey(GoodCategory, on_delete=models.PROTECT, related_name='good', verbose_name='Категория товара')
@@ -27,10 +36,13 @@ class Good(models.Model):
 class ImageStatus(models.Model):
     name = models.CharField(max_length=25, verbose_name='Статус фотографии')
 
+    def __str__(self):
+        return self.name
+
 class GoodImage(models.Model):
     good = models.ForeignKey(Good, on_delete=models.CASCADE, related_name='images', verbose_name='Товар')
     image = models.ImageField(verbose_name='Фотография товара')
-    status =models.ForeignKey(ImageStatus, on_delete=models.PROTECT, related_name='images', verbose_name='Статус фотографии')
+    status =models.ForeignKey(ImageStatus, on_delete=models.PROTECT, related_name='images', default=1, verbose_name='Статус фотографии')
 
 class Advertisement(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.PROTECT, related_name='adv', verbose_name='Пользователь')
@@ -45,6 +57,9 @@ class Advertisement(models.Model):
 
 class OrderStatus(models.Model):
     name = models.CharField(max_length=50, verbose_name='Статус предложения')
+
+    def __str__(self):
+        return self.name
 
 class Order(models.Model):
     ad = models.ForeignKey(Advertisement, on_delete=models.CASCADE, related_name='orders', verbose_name='Предложение')
