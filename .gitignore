@@ -26,9 +26,15 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
-/static/
-/media/
 
+# Игнорировать всё внутри media
+/media/*
+# Игнорировать всё внутри static
+/static/*
+
+# Не игнорировать папку images
+!/static/images/
+!/static/images/**
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
