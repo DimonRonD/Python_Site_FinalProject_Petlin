@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    {% csrf_token %}
+    {% for good in goods %}
+        <p>{{ customer }}</p>
+        <p>{{ cuscus }}</p>
+        <p>{{ good.name }}<br>
+            {{ good.category }}<br>
+            {{ good.description }}<br>
+            {% for image in good.images.all %}
+                <img src="{{ image.image.url }}">
+            {% endfor %}
+        </p>
+        <hr align="center" color="blue"
+    {% endfor %}
+</body>
+</html>

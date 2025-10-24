@@ -28,10 +28,22 @@ class GoodCategory(models.Model):
     def __str__(self):
         return self.name
 
+class GoodStatus(models.Model):
+    name = models.CharField(max_length=25, verbose_name='Статус товара')
+
+    def __str__(self):
+        return self.name
+
 class Good(models.Model):
     name = models.CharField(max_length=250, verbose_name='Название товара')
     category = models.ForeignKey(GoodCategory, on_delete=models.PROTECT, related_name='good', verbose_name='Категория товара')
     description = models.TextField(verbose_name='Описание товара')
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, verbose_name='Пользователь', related_name='good')
+    date = models.DateField(verbose_name='Дата создания товара', auto_now=True)
+    status = models.ForeignKey(GoodStatus, on_delete=models.PROTECT, related_name='good', default=1, verbose_name='Статус товара')
+
+    def __str__(self):
+        return self.name
 
 class ImageStatus(models.Model):
     name = models.CharField(max_length=25, verbose_name='Статус фотографии')
@@ -51,7 +63,7 @@ class Advertisement(models.Model):
     edate = models.DateField(verbose_name='Дата окончания предложения')
     name = models.CharField(max_length=200, verbose_name='Название предложения')
     description = models.TextField(verbose_name='Описание предложения')
-    price = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name='Стоимость предложения')
+    price = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name='Стоимость одного дня предложения')
     moderate = models.BooleanField(default=False, verbose_name='Прошел модерацию')
     city = models.ForeignKey(City, on_delete=models.PROTECT, related_name='adv', verbose_name='Город')
 

@@ -50,17 +50,36 @@ class AddGood(ModelForm):
 
 class AddAd(ModelForm):
     category = forms.ModelChoiceField(queryset=GoodCategory.objects.all(), label="Категория товара")
+    good = forms.ModelChoiceField(queryset=Good.objects.all().filter(customer=6, status_id=1).order_by('-date'), label="Ваши товары")
     class Meta:
         model = Advertisement
-        fields = ['name', 'category', 'description']
+        fields = ['name', 'category', 'good', 'description', 'sdate', 'edate', 'price']
         widgets = {
-            "password": forms.PasswordInput()
+            'sdate': forms.DateInput(attrs={'type': 'date'}),
+            'edate': forms.DateInput(attrs={'type': 'date'}),
         }
 
-    def save(self, commit=True):
-        user = super().save(commit=False)
-        user.username = user.email
-        user.set_password(self.cleaned_data['password'])
-        if commit:
-            user.save()
-        return user
+class Order(ModelForm):
+    """
+    Динамическое ограничение (например, от текущей даты)
+Если ограничение зависит от текущей даты или других условий:
+
+python
+import datetime
+from django import forms
+
+class MyForm(forms.Form):
+    today = datetime.date.today()
+    next_month = today + datetime.timedelta(days=30)
+
+    sdate = forms.DateField(
+        widget=forms.DateInput(
+            attrs={
+                'type': 'date',
+                'min': today.isoformat(),
+                'max': next_month.isoformat(),
+            }
+        )
+    )
+Это создаст календарь, где пользователь может выбирать даты только в течение следующих 30 дней
+    """
