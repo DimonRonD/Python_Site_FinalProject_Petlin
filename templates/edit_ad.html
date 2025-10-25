@@ -2,16 +2,16 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Редактирование предложения</title>
 </head>
 <body>
   {% block content %}
-  <h1>Создание предложения для товара {{ good.name }}</h1>
+  <h1>Редактирование предложения</h1>
   <form action="" method="post" enctype="multipart/form-data">
       {% csrf_token %}
       {{ form.as_p }}
 
-      <input type="submit" value="Создать товар"/>
+      <input type="submit" value="Редактировать товар"/>
   </form>
   {% endblock %}
 </body>

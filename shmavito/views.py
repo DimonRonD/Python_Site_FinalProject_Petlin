@@ -7,7 +7,7 @@ from django.contrib.auth import authenticate, login
 from django.views.decorators.csrf import csrf_exempt
 
 from .models import Good, City, Advertisement, Order, Customer, CustomerStatus, OrderStatus, OrderStatus, GoodImage, ImageStatus
-from .forms import LoginForm, RegisterForm, AddGood, GoodImageFormSet, AddAd
+from .forms import LoginForm, RegisterForm, AddGood, GoodImageFormSet, AddAd, EditAd
 
 # Create your views here.
 
@@ -42,20 +42,63 @@ def register(request):
         context = {'form': form}
         return render(request, 'register.html', context)
 
-def add_ad(request):
+def add_ad(request, good_id):
+    customer = request.user
+    good = Good.objects.get(id=good_id)
+    print(request.POST)
     if request.method == 'POST':
-        form = AddAd(request.POST)
+        form = AddAd(request.POST, customer=customer)
         if form.is_valid():
+            print('Enter to the Valid')
             ad = form.save(commit=False)  # создаём объект, но не сохраняем в БД
             ad.customer = request.user    # задаём автора объявления
             ad.city = request.user.city   # если требуется, копируем город пользователя
+            ad.good = good
+            ad.category = good.category
             ad.save()                     # теперь сохраняем в базу
-            redirect_url = reverse("list_ad")
+            redirect_url = reverse("list_ads")
             return HttpResponseRedirect(redirect_url)
+        else:
+            print(form.errors)
     else:
-        form = AddAd()
-    context = {'form': form}
+        form = AddAd(customer=customer)
+    context = {'form': form,
+               'good': good,}
     return render(request, 'add_ad.html', context)
+
+def edit_ad(request, ad_id):
+    customer = request.user
+    if request.method == 'POST':
+        adds = Advertisement.objects.get(id=ad_id)
+        adds.name = request.POST.get('name')
+        adds.description = request.POST.get('description')
+        adds.sdate = request.POST.get('sdate')
+        adds.edate = request.POST.get('edate')
+        adds.price = request.POST.get('price')
+        adds.save()
+        redirect_url = reverse("list_ads")
+        return HttpResponseRedirect(redirect_url)
+    else:
+        adds = Advertisement.objects.get(id=ad_id)
+        good = adds.good
+        form = EditAd(
+            customer=customer,
+            initial={
+                'name': adds.name,
+                'category': good.category,  # или конкретный ID
+                'good': good,
+                'description': good.description,
+                'price': adds.price,
+                'sdate': adds.sdate,
+                'edate': adds.edate,
+            }
+        )
+        form.fields['category'].disabled = True
+        form.fields['good'].disabled = True
+    context = {'form': form}
+    return render(request, 'edit_ad.html', context)
+
+
 
 def add_good(request):
     if request.method == 'POST':

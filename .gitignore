@@ -31,7 +31,6 @@ MANIFEST
 /media/*
 # Игнорировать всё внутри static
 /static/*
-
 # Не игнорировать папку images
 !/static/images/
 !/static/images/**

@@ -1,6 +1,8 @@
 from django import forms
 from django.core import validators
 from django.forms import ModelForm, inlineformset_factory
+from django.template.context_processors import request
+
 from .models import Good, Customer, City, GoodCategory, Advertisement, GoodImage, ImageStatus
 
 class LoginForm(ModelForm):
@@ -49,11 +51,31 @@ class AddGood(ModelForm):
         fields = ['name', 'category', 'description']
 
 class AddAd(ModelForm):
-    category = forms.ModelChoiceField(queryset=GoodCategory.objects.all(), label="Категория товара")
-    good = forms.ModelChoiceField(queryset=Good.objects.all().filter(customer=6, status_id=1).order_by('-date'), label="Ваши товары")
+    def __init__(self, *args, **kwargs):
+        # Извлекаем customer из kwargs
+        self.customer = kwargs.pop('customer', None)
+        super().__init__(*args, **kwargs)
+
+        # Теперь можем использовать self.customer для фильтрации queryset
+        if self.customer:
+            self.fields['good'].queryset = Good.objects.filter(
+                customer=self.customer,
+                status_id=1
+            ).order_by('-date')
+
+    category = forms.ModelChoiceField(
+        queryset=GoodCategory.objects.all(),
+        label="Категория товара"
+    )
+
+    good = forms.ModelChoiceField(
+        queryset=Good.objects.none(),
+        label="Ваши товары"
+    )
+    #good = forms.ModelChoiceField(queryset=Good.objects.all().filter(customer=customer, status_id=1).order_by('-date'), label="Ваши товары")
     class Meta:
         model = Advertisement
-        fields = ['name', 'category', 'good', 'description', 'sdate', 'edate', 'price']
+        fields = ['name', 'category', 'description', 'sdate', 'edate', 'price']
         widgets = {
             'sdate': forms.DateInput(attrs={'type': 'date'}),
             'edate': forms.DateInput(attrs={'type': 'date'}),
@@ -83,3 +105,33 @@ class MyForm(forms.Form):
     )
 Это создаст календарь, где пользователь может выбирать даты только в течение следующих 30 дней
     """
+    pass
+
+class EditAd(ModelForm):
+    def __init__(self, *args, **kwargs):
+        self.customer = kwargs.pop('customer', None)
+        super().__init__(*args, **kwargs)
+
+        if self.customer:
+            self.fields['good'].queryset = Good.objects.filter(
+                customer=self.customer,
+                status_id=1
+            ).order_by('-date')
+
+    category = forms.ModelChoiceField(
+        queryset=GoodCategory.objects.all(),
+        label="Категория товара"
+    )
+
+    good = forms.ModelChoiceField(
+        queryset=Good.objects.none(),
+        label="Ваши товары"
+    )
+
+    class Meta:
+        model = Advertisement
+        fields = ['name', 'category', 'good', 'description', 'sdate', 'edate', 'price']
+        widgets = {
+            'sdate': forms.DateInput(format=('%Y-%m-%d'), attrs={'type': 'date'}),
+            'edate': forms.DateInput(format=('%Y-%m-%d'), attrs={'type': 'date'}),
+        }
