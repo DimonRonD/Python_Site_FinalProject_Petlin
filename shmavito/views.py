@@ -18,7 +18,7 @@ def auth_site(request):
             try:
                 user = authenticate(request, username=form.cleaned_data["email"], password=form.cleaned_data["password"])
                 login(request, user)
-                redirect_url = reverse("add_ad")    # reverse("list_goods")
+                redirect_url = reverse("add_good")    # reverse("list_goods")
                 return HttpResponseRedirect(redirect_url)
             except Exception as e:
                 return HttpResponse(f"Нихера не вышло {e}")
@@ -47,7 +47,7 @@ def add_ad(request, good_id):
     good = Good.objects.get(id=good_id)
     print(request.POST)
     if request.method == 'POST':
-        form = AddAd(request.POST, customer=customer)
+        form = AddAd(request.POST)
         if form.is_valid():
             print('Enter to the Valid')
             ad = form.save(commit=False)  # создаём объект, но не сохраняем в БД
@@ -61,7 +61,8 @@ def add_ad(request, good_id):
         else:
             print(form.errors)
     else:
-        form = AddAd(customer=customer)
+        form = AddAd()
+
     context = {'form': form,
                'good': good,}
     return render(request, 'add_ad.html', context)
@@ -87,7 +88,7 @@ def edit_ad(request, ad_id):
                 'name': adds.name,
                 'category': good.category,  # или конкретный ID
                 'good': good,
-                'description': good.description,
+                'description': adds.description,
                 'price': adds.price,
                 'sdate': adds.sdate,
                 'edate': adds.edate,
@@ -101,21 +102,23 @@ def edit_ad(request, ad_id):
 
 
 def add_good(request):
+    customer = request.user
     if request.method == 'POST':
-        form = AddGood(request.POST)
+        form = AddGood(request.POST,)
         formset = GoodImageFormSet(request.POST, request.FILES)
         if form.is_valid() and formset.is_valid():
-            # Сохранение основного товара
+            good = form.save(commit=False)
+            good.customer = customer
             good = form.save()
 
             # Сохранение изображений
             for img_form in formset:
                 if img_form.cleaned_data.get('image'):  # проверяем наличие файла
                     img = img_form.save(commit=False)
-                    img.good = good  # привязываем изображение к товару
+                    img.good = good
                     img.save()
 
-            return redirect('list_goods')  # перенаправляем на страницу со списком товаров
+            return redirect('list_ads')  # перенаправляем на страницу со списком товаров
         else:
             errors = []  # Проверяем на ошибки при заполнении формы
             if not form.is_valid():
@@ -135,14 +138,12 @@ def edit_good(request, good_id):
     customer = request.user
 
     if request.method == 'POST':
-        formset = GoodImageFormSet(request.POST, request.FILES, instance=good)
         good = Good.objects.get(id=good_id, customer=customer)
+        formset = GoodImageFormSet(request.POST, request.FILES, instance=good)
         good.name = request.POST.get('name')
         good.description = request.POST.get('description')
-        good.category = request.POST.get('category')
-        good.edate = request.POST.get('edate')
-        good.status = request.POST.get('status')
         good.save()
+        formset.save()
         redirect_url = reverse("list_goods")
         return HttpResponseRedirect(redirect_url)
     else:
@@ -186,3 +187,60 @@ def list_ads(request):
                }
 
     return render(request, 'list_ad.html', context)
+
+def delete_ad(request, ad_id):
+    customer = request.user
+    if request.method == 'POST':
+        adds = Advertisement.objects.get(id=ad_id, customer=customer)
+        adds.delete()
+        redirect_url = reverse("list_ads")
+        return HttpResponseRedirect(redirect_url)
+    else:
+        adds = Advertisement.objects.get(id=ad_id, customer=customer)
+        good = adds.good
+        form = EditAd(
+            customer=customer,
+            initial={
+                'name': adds.name,
+                'category': good.category,  # или конкретный ID
+                'good': good,
+                'description': adds.description,
+                'price': adds.price,
+                'sdate': adds.sdate,
+                'edate': adds.edate,
+            }
+        )
+        form.fields['category'].disabled = True
+        form.fields['good'].disabled = True
+    context = {'form': form}
+    return render(request, 'delete_ad.html', context)
+
+def delete_good(request, good_id):
+    customer = request.user
+    if request.method == 'POST':
+        good = Good.objects.get(id=good_id, customer=customer)
+        img = GoodImage.objects.all().filter(good=good)
+        adds = Advertisement.objects.all().filter(good=good, customer=customer)
+        if adds: adds.delete()
+        if img: img.delete()
+        good.delete()
+        redirect_url = reverse("list_ads")
+        return HttpResponseRedirect(redirect_url)
+    else:
+        good = Good.objects.get(id=good_id, customer=customer)
+        img = GoodImageFormSet(request.POST, request.FILES, instance=good)
+        adds = Advertisement.objects.all().filter(good=good, customer=customer)
+        form = EditGood(
+            customer=customer,
+            initial={
+                'name': good.name,
+                'category': good.category,  # или конкретный ID
+                'good': good,
+                'description': good.description,
+            }
+        )
+        form.fields['category'].disabled = True
+        form.fields['good'].disabled = True
+    context = {'form': form}
+    return render(request, 'delete_ad.html', context)
+

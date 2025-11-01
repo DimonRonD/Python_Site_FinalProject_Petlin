@@ -63,19 +63,19 @@ class AddAd(ModelForm):
                 status_id=1
             ).order_by('-date')
 
-    category = forms.ModelChoiceField(
-        queryset=GoodCategory.objects.all(),
-        label="Категория товара"
-    )
+    # category = forms.ModelChoiceField(
+    #     queryset=GoodCategory.objects.all(),
+    #     label="Категория товара"
+    # )
+    #
+    # good = forms.ModelChoiceField(
+    #     queryset=Good.objects.none(),
+    #     label="Ваши товары"
+    # )
 
-    good = forms.ModelChoiceField(
-        queryset=Good.objects.none(),
-        label="Ваши товары"
-    )
-    #good = forms.ModelChoiceField(queryset=Good.objects.all().filter(customer=customer, status_id=1).order_by('-date'), label="Ваши товары")
     class Meta:
         model = Advertisement
-        fields = ['name', 'category', 'description', 'sdate', 'edate', 'price']
+        fields = ['name', 'description', 'sdate', 'edate', 'price']
         widgets = {
             'sdate': forms.DateInput(attrs={'type': 'date'}),
             'edate': forms.DateInput(attrs={'type': 'date'}),
