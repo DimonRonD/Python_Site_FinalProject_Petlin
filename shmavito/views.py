@@ -179,8 +179,8 @@ def list_goods(request):
 
 def list_ads(request):
     customer = request.user.id
-    goods = Good.objects.all().filter(customer=customer, status_id=1).order_by('-date')
-    ads = Advertisement.objects.all().filter(customer=customer).order_by('-sdate')
+    goods = Good.objects.filter(customer=customer, status_id=1).order_by('-date', '-id')
+    ads = Advertisement.objects.filter(customer=customer).order_by('-sdate')
     context = {'goods': goods,
                'customer': customer,
                'ads': ads,
@@ -242,5 +242,11 @@ def delete_good(request, good_id):
         form.fields['category'].disabled = True
         form.fields['good'].disabled = True
     context = {'form': form}
-    return render(request, 'delete_ad.html', context)
+    return render(request, 'delete_good.html', context)
 
+#TODO: Поиск
+#TODO: Страница модерации
+#TODO: Страница комментариев
+#TODO: Страница просмотра предложений для авторизованноего пользователя
+#TODO: Страница просмотра предложений для всех
+#TODO: Страница заказа

@@ -1,13 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
-    <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/png" sizes="16x16">
-    <link rel="stylesheet" href="{% static 'css/simple.css' %}">
-    <meta charset="UTF-8">
-    <title>Удаление предложения</title>
-</head>
-<body>
+{% extends "base.html" %}
+    {% block title %}Удаление предложения{% endblock %}
   {% block content %}
   <h1>Удаление предложения</h1>
   <form action="" method="post" enctype="multipart/form-data">
@@ -15,7 +7,6 @@
       {{ form.as_p }}
 
       <input type="submit" value="Подтвердите удаление предложения"/>
+      <input type=button value="Назад" onClick="javascript:history.go(-1);">
   </form>
   {% endblock %}
-</body>
-</html>
