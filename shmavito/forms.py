@@ -135,3 +135,29 @@ class EditAd(ModelForm):
             'sdate': forms.DateInput(format=('%Y-%m-%d'), attrs={'type': 'date'}),
             'edate': forms.DateInput(format=('%Y-%m-%d'), attrs={'type': 'date'}),
         }
+
+
+class EditGood(ModelForm):
+    def __init__(self, *args, **kwargs):
+        self.customer = kwargs.pop('customer', None)
+        super().__init__(*args, **kwargs)
+
+        if self.customer:
+            self.fields['good'].queryset = Good.objects.filter(
+                customer=self.customer,
+                status_id=1
+            ).order_by('-date')
+
+    category = forms.ModelChoiceField(
+        queryset=GoodCategory.objects.all(),
+        label="Категория товара"
+    )
+
+    good = forms.ModelChoiceField(
+        queryset=Good.objects.none(),
+        label="Ваши товары"
+    )
+
+    class Meta:
+        model = Good
+        fields = ['name', 'category', 'good', 'description']

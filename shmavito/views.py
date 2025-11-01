@@ -7,7 +7,7 @@ from django.contrib.auth import authenticate, login
 from django.views.decorators.csrf import csrf_exempt
 
 from .models import Good, City, Advertisement, Order, Customer, CustomerStatus, OrderStatus, OrderStatus, GoodImage, ImageStatus
-from .forms import LoginForm, RegisterForm, AddGood, GoodImageFormSet, AddAd, EditAd
+from .forms import LoginForm, RegisterForm, AddGood, GoodImageFormSet, AddAd, EditAd, EditGood
 
 # Create your views here.
 
@@ -130,6 +130,40 @@ def add_good(request):
         formset = GoodImageFormSet()
 
     return render(request, 'add_good.html', {'form': form, 'formset': formset})
+
+def edit_good(request, good_id):
+    customer = request.user
+
+    if request.method == 'POST':
+        formset = GoodImageFormSet(request.POST, request.FILES, instance=good)
+        good = Good.objects.get(id=good_id, customer=customer)
+        good.name = request.POST.get('name')
+        good.description = request.POST.get('description')
+        good.category = request.POST.get('category')
+        good.edate = request.POST.get('edate')
+        good.status = request.POST.get('status')
+        good.save()
+        redirect_url = reverse("list_goods")
+        return HttpResponseRedirect(redirect_url)
+    else:
+        good = Good.objects.get(id=good_id)
+        form = EditGood(
+            customer=customer,
+            initial={
+                'name': good.name,
+                'category': good.category,  # или конкретный ID
+                'good': good,
+                'description': good.description,
+                'status': good.status,
+            }
+        )
+        form.fields['category'].disabled = True
+        form.fields['good'].disabled = True
+        formset = GoodImageFormSet(instance=good)
+    context = {'form': form,
+               'formset': formset,
+               }
+    return render(request, 'edit_good.html', context)
 
 
 def list_goods(request):
