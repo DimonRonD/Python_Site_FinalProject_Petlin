@@ -34,6 +34,8 @@ MANIFEST
 # Не игнорировать папку images
 !/static/images/
 !/static/images/**
+!/static/css/
+!/static/css/**
 
 # PyInstaller
 #  Usually these files are written by a python script from a template

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    {% load static %}
+    <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
+    <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/png" sizes="16x16">
+    <link rel="stylesheet" href="{% static 'css/simple.css' %}">
+    <meta charset="UTF-8">
+    <title>{% block title %}Заголовок по умолчанию{% endblock %}</title>
+</head>
+<body>
+    {% include "header.html" %}
+    {% block content %}
+    <!-- содержимое страницы -->
+    {% endblock %}
+</body>
+</html>

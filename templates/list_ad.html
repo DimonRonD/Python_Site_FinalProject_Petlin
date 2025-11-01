@@ -1,14 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
+{% extends "base.html" %}
+    {% block title %}Список ваших предложений{% endblock %}
+
+{% block content %}
     {% load static %}
-    <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
-    <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/png" sizes="16x16">
-    <meta charset="UTF-8">
-    <title>Список ваших предложений</title>
-</head>
-<body>
-    <img src="{% static 'images/shmavito_white.gif' %}">
     {% csrf_token %}
     {% for good in goods %}
          <h1>Название товара: {{ good.name }}
@@ -17,14 +11,16 @@
          </h1>
          <h4>Товарная категория: {{ good.category }}</h4>
         <p><b>Описание товара:</b> {{ good.description }}</p>
+        <div class="gallery">
         {% for image in good.images.all %}
-                <img src="{{ image.image.url }}" style="width: auto; height: 100px;">
+                <a href="{{ image.image.url }}" target="blank"><img src="{{ image.image.url }}" style="width: auto; height: 100px;"></a>
         {% endfor %}
+        </div>
                 <br>
-        <table cellpadding="5" cellspacing="5"><tr><td colspan="2" align="left">Ваши предложения на товаре:</td></tr><tr>
+        <table cellpadding="5" cellspacing="5" ><tr><td colspan="2" align="left" style="border: none; padding: 3pt;">Ваши предложения на товаре:</td></tr><tr>
        {% for adv in good.adv.all %}
           {% if adv.good.id == good.id %}
-            <td><table style="border: 1px solid blue; border-collapse: collapse; ">
+            <td style="border: none; padding: 3pt; width: 50%;"><table style="border: 1px solid blue; border-collapse: collapse; ">
             <tr><td style="border: none; padding: 3pt;">Название:</td><td style="border: none; padding: 3pt;"> <i>{{ adv.name }}</i></td></tr>
             <tr><td style="border: none; padding: 3pt;">Описание предложения:</td><td style="border: none; padding: 3pt;"> <i>{{ adv.description }}</i></td></tr>
             <tr><td style="border: none; padding: 3pt;">Начало:</td><td style="border: none; padding: 3pt;"> {{ adv.sdate }}</td></tr>
@@ -46,12 +42,9 @@
           {% endif %}
 
        {% endfor %}
-        </tr><tr><td colspan="2"><a href="/add_ad/{{ good.id }}">Добавить предложение</a></td>
+        </tr><tr><td colspan="2" style="border: none; padding: 3pt;"><a href="/add_ad/{{ good.id }}">Добавить предложение</a></td>
         </tr></table>
                     <hr align="center" color="blue">
     {% endfor %}
 
-
-
-</body>
-</html>
+{% endblock %}
