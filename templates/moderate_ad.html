@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+    {% block title %}Список товаров на модерацию{% endblock %}
+
+{% block content %}
+{% include "header_moder.html" %}
+{% load static %}
+{% for ad in ads %}
+    {% for good in goods %}
+        {% if ad.good.id == good.id %}
+            <table><tr><td style="align: left; border: none; width: 40%; border-right: 1px solid blue; vertical-align: top"">
+                <h3>{{ good.name }}</h3>
+                <p>{{ good.description }}</p>
+                <div class="galleryl">
+                {% for image in good.images.all %}
+                        <a href="{{ image.image.url }}" target="blank"><img src="{{ image.image.url }}" style="width: auto; height: 100px;"></a>
+                {% endfor %}
+                </div>
+            </td>
+
+            <td style="border: none; padding: 3pt; width: 60%; vertical-align: top">
+                <table>
+                    <tr><td style="border: none; padding: 3pt; width: 70%"><h3>{{ ad.name }}</h3></td><td style="border: none; padding: 3pt; width: 30%"><h2>{{ ad.price }}</h2></td></tr>
+                    <tr><td colspan="2" style="border: none; padding: 3pt"><p>{{ ad.description }}</p></td></tr>
+                    <tr><td colspan="2" style="border: none; padding: 3pt"><p>{{ ad.sdate }} - {{ ad.edate }}</p></td></tr>
+                    <tr><td colspan="2" style="border: none; padding: 3pt"><p>{{ ad.city }}</p></td></tr>
+                    <tr><td colspan="2" style="border: none; padding: 3pt; align: right; vertical-align: top">
+                        <div class="galleryr">
+                        <a href="/approve_ad/{{ ad.id }}"><img src="{% static 'images/approve_32.png' %}" alt="Одобрить предложение" title="Одобрить предложение" style="width: auto; height: 32px;"></a>
+                        <a href="/disapprove_ad/{{ ad.id }}"><img src="{% static 'images/disapprove_32.png' %}" alt="Отклонить предложение" title="Отклонить предложение" style="width: auto; height: 32px;"></a>
+                        </div>
+                    </td></tr>
+                </table>
+            </td></tr></table>
+
+
+            <hr>
+        {% endif %}
+    {% endfor %}
+{% endfor %}
+
+{% endblock %}

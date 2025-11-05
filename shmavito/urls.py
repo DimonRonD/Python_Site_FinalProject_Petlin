@@ -17,4 +17,10 @@ urlpatterns = [
     path('delete_ad/<int:ad_id>', views.delete_ad, name='delete_ad'),
     path('list_goods', views.list_goods, name='list_goods'),
     path('list_ads', views.list_ads, name='list_ads'),
+    path('moder_good', views.moder_good, name='moder_good'),
+    path('approve_good/<int:good_id>', views.approve_good, name='approve_good'),
+    path('disapprove_good/<int:good_id>', views.disapprove_good, name='disapprove_good'),
+    path('moder_ad', views.moder_ad, name='moder_ad'),
+    path('approve_ad/<int:ad_id>', views.approve_ad, name='approve_ad'),
+    path('disapprove_ad/<int:ad_id>', views.disapprove_ad, name='disapprove_ad'),
 ]

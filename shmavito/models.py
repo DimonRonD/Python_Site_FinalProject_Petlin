@@ -41,6 +41,7 @@ class Good(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, verbose_name='Пользователь', related_name='good')
     date = models.DateField(verbose_name='Дата создания товара', auto_now=True)
     status = models.ForeignKey(GoodStatus, on_delete=models.PROTECT, related_name='good', default=1, verbose_name='Статус товара')
+    moderate = models.IntegerField(default=0, verbose_name='Ожидает модерацию')
 
     def __str__(self):
         return self.name
@@ -64,7 +65,7 @@ class Advertisement(models.Model):
     name = models.CharField(max_length=200, verbose_name='Название предложения')
     description = models.TextField(verbose_name='Описание предложения')
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name='Стоимость одного дня предложения')
-    moderate = models.BooleanField(default=False, verbose_name='Прошел модерацию')
+    moderate = models.IntegerField(default=0, verbose_name='Ожидает модерацию')
     city = models.ForeignKey(City, on_delete=models.PROTECT, related_name='adv', verbose_name='Город')
 
 class OrderStatus(models.Model):

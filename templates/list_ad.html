@@ -2,10 +2,22 @@
     {% block title %}Список ваших предложений{% endblock %}
 
 {% block content %}
+{% include "header.html" %}
     {% load static %}
     {% csrf_token %}
     {% for good in goods %}
-         <h1>Название товара: {{ good.name }}
+
+             {% if good.moderate == 1 %}
+                <h1 style="background-color: #F0FFF0;">
+                <img src="{% static 'images/approve_goods.png' %}" alt="Товар прошло модерацию" title="Товар прошло модерацию">
+              {% elif good.moderate == 0 %}
+                <h1 style="background-color: #FFF8DC;">
+                <img src="{% static 'images/waiting_approve_goods.png' %}" alt="Товар ожидает модерацию" title="Товар ожидает модерацию">
+              {% else %}
+                <h1 style="background-color: #FFF0F0;">
+                <img src="{% static 'images/disapprove_goods.png' %}" alt="Товар не прошло модерацию" title="Товар не прошло модерацию">
+              {% endif %}
+             Название товара: {{ good.name }}
              <a href="/edit_good/{{ good.id }}"><img src="{% static 'images/edit_good.png' %}" alt="Редактировать товар" title="Редактировать товар"></a>
              <a href="/delete_good/{{ good.id }}"><img src="{% static 'images/delete_good_2_32.png' %}" alt="Удалить товар" title="Удалить товар"></a>
          </h1>
@@ -20,20 +32,29 @@
         <table cellpadding="5" cellspacing="5" ><tr><td colspan="2" align="left" style="border: none; padding: 3pt;">Ваши предложения на товаре:</td></tr><tr>
        {% for adv in good.adv.all %}
           {% if adv.good.id == good.id %}
-            <td style="border: none; padding: 3pt; width: 50%;"><table style="border: 1px solid blue; border-collapse: collapse; ">
+              {% if adv.moderate == 1 %}
+                <td style="border: none; padding: 3pt; background-color: #F0FFF0; width: 50%;">
+              {% elif adv.moderate == 0 %}
+                <td style="border: none; padding: 3pt; background-color: #FFF8DC; width: 50%;">
+              {% else %}
+                <td style="border: none; padding: 3pt; background-color: #FFF0F0; width: 50%;">
+              {% endif %}
+            <table style="border: 1px solid blue; border-collapse: collapse; ">
             <tr><td style="border: none; padding: 3pt;">Название:</td><td style="border: none; padding: 3pt;"> <i>{{ adv.name }}</i></td></tr>
             <tr><td style="border: none; padding: 3pt;">Описание предложения:</td><td style="border: none; padding: 3pt;"> <i>{{ adv.description }}</i></td></tr>
             <tr><td style="border: none; padding: 3pt;">Начало:</td><td style="border: none; padding: 3pt;"> {{ adv.sdate }}</td></tr>
             <tr><td style="border: none; padding: 3pt;">Конец:</td><td style="border: none; padding: 3pt;"> {{ adv.edate }}</td></tr>
             <tr><td style="border: none; padding: 3pt;">Стоимость:</td><td style="border: none; padding: 3pt;"> <b>{{ adv.price }}</b> руб/сутки</td></tr>
                 <tr><td style="border: none; padding: 3pt;">
-              {% if adv.moderate == True %}
+              {% if adv.moderate == 1 %}
                 <p style = "color: green;"><img src="{% static 'images/moder_permit_32.png' %}" alt="Предложение прошло модерацию" title="Предложение прошло модерацию"></p>
+              {% elif adv.moderate == 0 %}
+                <p style = "color: green;"><img src="{% static 'images/moder_await.png' %}" alt="Предложение ожидает модерацию" title="Предложение ожидает модерацию"></p>
               {% else %}
                 <p style = "color: red;"><img src="{% static 'images/moder_yok_32.png' %}" alt="Предложение не прошло модерацию" title="Предложение не прошло модерацию"></p>
               {% endif %}
                 </td>
-            <td style="border: none; padding: 3pt; text-align: right;">
+              <td style="border: none; padding: 3pt; text-align: right;">
                     <a href="/edit_ad/{{ adv.id }}"><img src="{% static 'images/edit_ad.png' %}" alt="Редактировать предложение" title="Редактировать предложение"></a>
                     <a href="/delete_ad/{{ adv.id }}"><img src="{% static 'images/delete_32.png' %}" alt="Удалить предложение" title="Удалить предложение"></a>
             </td></tr>

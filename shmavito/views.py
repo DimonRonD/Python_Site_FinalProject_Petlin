@@ -244,9 +244,80 @@ def delete_good(request, good_id):
     context = {'form': form}
     return render(request, 'delete_good.html', context)
 
-#TODO: Поиск
-#TODO: Страница модерации
-#TODO: Страница комментариев
-#TODO: Страница просмотра предложений для авторизованноего пользователя
-#TODO: Страница просмотра предложений для всех
-#TODO: Страница заказа
+def moder_good(request):
+    customer = request.user
+
+    goods = Good.objects.all().filter(status_id=1, moderate=0).order_by('-date')
+    context = {'goods': goods,
+               'customer': request.user.id,
+               }
+
+    return render(request, 'moderate_good.html', context)
+
+def approve_good(request, good_id):
+    customer = request.user
+
+    good = Good.objects.get(id=good_id)
+    good.moderate = 1
+    good.save()
+    goods = Good.objects.all().filter(status_id=1, moderate=0).order_by('-date')
+    context = {'goods': goods,
+               'customer': request.user.id,
+               }
+
+    return render(request, 'moderate_good.html', context)
+
+def disapprove_good(request, good_id):
+    customer = request.user
+
+    good = Good.objects.get(id=good_id)
+    good.moderate = 2
+    good.save()
+    goods = Good.objects.all().filter(status_id=1, moderate=0).order_by('-date')
+    context = {'goods': goods,
+               'customer': request.user.id,
+               }
+
+    return render(request, 'moderate_good.html', context)
+
+def moder_ad(request):
+    customer = request.user
+    goods = Good.objects.all().filter(status_id=1, moderate=1).order_by('-date')
+    ads = Advertisement.objects.all().filter(moderate=0).order_by('-sdate')
+    context = {'goods': goods,
+               'customer': customer,
+               'ads': ads,
+               }
+
+    return render(request, 'moderate_ad.html', context)
+
+def approve_ad(request, ad_id):
+    customer = request.user
+
+    adv = Advertisement.objects.get(id=ad_id)
+    adv.moderate = 1
+    adv.save()
+    goods = Good.objects.all().filter(status_id=1, moderate=1).order_by('-date')
+    ads = Advertisement.objects.all().filter(moderate=0).order_by('-sdate')
+    context = {'goods': goods,
+               'customer': customer,
+               'ads': ads,
+               }
+
+    return render(request, 'moderate_ad.html', context)
+
+def disapprove_ad(request, ad_id):
+    customer = request.user
+
+    adv = Advertisement.objects.get(id=ad_id)
+    adv.moderate = 2
+    adv.save()
+    goods = Good.objects.all().filter(status_id=1, moderate=1).order_by('-date')
+    ads = Advertisement.objects.all().filter(moderate=0).order_by('-sdate')
+    context = {'goods': goods,
+               'customer': customer,
+               'ads': ads,
+               }
+
+    return render(request, 'moderate_ad.html', context)
+

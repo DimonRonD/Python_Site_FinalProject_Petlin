@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+    {% block title %}Список товаров на модерацию{% endblock %}
+
+{% block content %}
+{% include "header_moder.html" %}
+{% load static %}
+    {% for good in goods %}
+        <table><tr><td style="align: left; border: none; width: 80%">
+        <h3>{{ good.name }}</h3></td>
+            <td style="align: right; border: none; width: 20%"><div class="gallery">
+            <a href="/approve_good/{{ good.id }}"><img src="{% static 'images/approve_32.png' %}" alt="Одобрить товар" title="Одобрить товар" style="width: auto; height: 32px;"></a>
+            <a href="/disapprove_good/{{ good.id }}"><img src="{% static 'images/disapprove_32.png' %}" alt="Отклонить товар" title="Отклонить товар" style="width: auto; height: 32px;"></a>
+            </div>
+        </td></tr></table>
+        <p>{{ good.description }}</p>
+        <div class="gallery">
+        {% for image in good.images.all %}
+                <a href="{{ image.image.url }}" target="blank"><img src="{{ image.image.url }}" style="width: auto; height: 100px;"></a>
+        {% endfor %}
+        </div>
+        <hr>
+    {% endfor %}
+
+
+{% endblock %}

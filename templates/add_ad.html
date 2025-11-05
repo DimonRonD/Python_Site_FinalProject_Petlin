@@ -1,6 +1,7 @@
 {% extends "base.html" %}
     {% block title %}Создание предложения для товара {{ good.name }}{% endblock %}
   {% block content %}
+{% include "header.html" %}
   <h1>Создание предложения для товара {{ good.name }}</h1>
   <form action="" method="post" enctype="multipart/form-data">
       {% csrf_token %}

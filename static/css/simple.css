@@ -588,6 +588,20 @@ figure {
   overflow-x: auto;
 }
 
+.galleryr {
+  display: flex;
+  gap: 1rem;
+  text-align: right;
+  justify-content: flex-end;
+}
+
+.galleryl {
+  display: flex;
+  gap: 1rem;
+  text-align: right;
+  justify-content: flex-begin;
+}
+
 .gallery {
   display: flex;
   gap: 1rem;

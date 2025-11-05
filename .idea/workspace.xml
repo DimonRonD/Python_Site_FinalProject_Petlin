@@ -4,7 +4,27 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="32c8a2b1-18d5-4b78-8e26-53110b02d040" name="Изменения" comment="FEATURE: added base.html, static/css, styles on all [ages" />
+    <list default="true" id="32c8a2b1-18d5-4b78-8e26-53110b02d040" name="Изменения" comment="FEATURE: added base.html, static/css, styles on all [ages">
+      <change afterPath="$PROJECT_DIR$/templates/header_moder.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/templates/moderate_ad.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/templates/moderate_good.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Readme.md" beforeDir="false" afterPath="$PROJECT_DIR$/Readme.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/shmavito/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/shmavito/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/shmavito/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/shmavito/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/shmavito/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/shmavito/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/css/simple.css" beforeDir="false" afterPath="$PROJECT_DIR$/static/css/simple.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/add_ad.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/add_ad.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/add_good.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/add_good.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/base.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/delete_ad.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/delete_ad.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/delete_good.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/delete_good.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/edit_ad.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/edit_ad.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/edit_good.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/edit_good.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/header.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/header.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/list_ad.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/list_ad.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/list_goods.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/list_goods.html" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -53,13 +73,13 @@
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager": "true",
     "RunOnceActivity.git.unshallow": "true",
     "git-widget-placeholder": "main",
-    "last_opened_file_path": "/Users/dmitriipetlin/PycharmProjects/PythonProject6/static"
+    "last_opened_file_path": "/Users/dmitriipetlin/PycharmProjects/PythonProject6/templates"
   }
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/static" />
       <recent name="$PROJECT_DIR$/templates" />
+      <recent name="$PROJECT_DIR$/static" />
       <recent name="$PROJECT_DIR$/shmavito" />
       <recent name="$PROJECT_DIR$" />
     </key>
@@ -187,7 +207,15 @@
       <option name="project" value="LOCAL" />
       <updated>1762003913744</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="FEATURE: added base.html, static/css, styles on all [ages">
+      <option name="closed" value="true" />
+      <created>1762003949909</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1762003949909</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
