@@ -13,6 +13,7 @@
             </div>
         </td></tr></table>
         <p>{{ good.description }}</p>
+        <p><i>Автор: {{ good.customer }}</i></p>
         <div class="gallery">
         {% for image in good.images.all %}
                 <a href="{{ image.image.url }}" target="blank"><img src="{{ image.image.url }}" style="width: auto; height: 100px;"></a>

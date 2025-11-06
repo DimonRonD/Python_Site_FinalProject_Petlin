@@ -6,8 +6,10 @@ from . import views
 
 urlpatterns = [
     path('favicon.ico', RedirectView.as_view(url=staticfiles_storage.url('images/favicon.ico'))),
-    path("", views.auth_site),
-    path("redirect", views.auth_site, name="redirect"),
+    path("", views.list_anon, name="list_anon"),
+    path("redirect", views.list_anon, name="redirect"),
+    path("auth", views.auth_site, name="auth"),
+    path("logout", views.auth_logout, name="logout"),
     path('register', views.register, name='register'),
     path('add_good', views.add_good, name='add_good'),
     path('edit_good/<int:good_id>', views.edit_good, name='edit_good'),

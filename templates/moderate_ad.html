@@ -10,6 +10,7 @@
             <table><tr><td style="align: left; border: none; width: 40%; border-right: 1px solid blue; vertical-align: top"">
                 <h3>{{ good.name }}</h3>
                 <p>{{ good.description }}</p>
+                <p><i>Автор: {{ good.customer }}</i></p>
                 <div class="galleryl">
                 {% for image in good.images.all %}
                         <a href="{{ image.image.url }}" target="blank"><img src="{{ image.image.url }}" style="width: auto; height: 100px;"></a>

@@ -35,7 +35,7 @@ GoodImageFormSet = inlineformset_factory(
             Good,
             GoodImage,
             fields=['image', 'status'],
-            extra=3,  # Количество полей для изображений по умолчанию
+            extra=5,  # Количество полей для изображений по умолчанию
             can_delete=True
         )
 

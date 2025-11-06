@@ -21,6 +21,10 @@ class Customer(AbstractUser):
     tg_name = models.CharField(max_length=50, verbose_name='Имя пользователя Telegram', null=True)
     tg_id = models.IntegerField(verbose_name='ID в Telegram', null=True)
     status = models.ForeignKey(CustomerStatus, on_delete=models.PROTECT, related_name='customers', verbose_name='Статус пользователя', default=1)
+    isModerator = models.BooleanField(default=False, verbose_name='Пользователь является модератором')
+
+    def __str__(self):
+        return f"{self.first_name} {self.last_name}"
 
 class GoodCategory(models.Model):
     name = models.CharField(max_length=25, verbose_name='Категория товара', default='Одежда')

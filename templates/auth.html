@@ -1,14 +1,7 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minimal Login Form</title>
-    <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
-    <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/png" sizes="16x16">
-    <link rel="stylesheet" href="{% static 'css/simple.css' %}">
-</head>
-<body>
+{% extends "base.html" %}
+    {% block title %}Для входа в Шмавито введите логин и пароль{% endblock %}
+
+{% block content %}
     <div class="login-container">
         <div class="login-card">
             <div class="login-header">
@@ -34,5 +27,4 @@
         </div>
     </div>
 
-</body>
-</html>
+{% endblock %}

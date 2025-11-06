@@ -1,10 +1,8 @@
-from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotAllowed, JsonResponse
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotAllowed
 from django.db.models import Q, Sum, F
 from django.shortcuts import render, redirect
 from django.urls import reverse
-from django.contrib.auth import authenticate, login
-from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth import authenticate, login, logout
 
 from .models import Good, City, Advertisement, Order, Customer, CustomerStatus, OrderStatus, OrderStatus, GoodImage, ImageStatus
 from .forms import LoginForm, RegisterForm, AddGood, GoodImageFormSet, AddAd, EditAd, EditGood
@@ -18,7 +16,7 @@ def auth_site(request):
             try:
                 user = authenticate(request, username=form.cleaned_data["email"], password=form.cleaned_data["password"])
                 login(request, user)
-                redirect_url = reverse("add_good")    # reverse("list_goods")
+                redirect_url = reverse("list_ads")    # reverse("list_goods")
                 return HttpResponseRedirect(redirect_url)
             except Exception as e:
                 return HttpResponse(f"Нихера не вышло {e}")
@@ -41,6 +39,10 @@ def register(request):
         form = RegisterForm()
         context = {'form': form}
         return render(request, 'register.html', context)
+
+def auth_logout(request):
+    logout(request)
+    return redirect('redirect')
 
 def add_ad(request, good_id):
     customer = request.user
@@ -76,6 +78,7 @@ def edit_ad(request, ad_id):
         adds.sdate = request.POST.get('sdate')
         adds.edate = request.POST.get('edate')
         adds.price = request.POST.get('price')
+        adds.moderate = 0
         adds.save()
         redirect_url = reverse("list_ads")
         return HttpResponseRedirect(redirect_url)
@@ -142,9 +145,10 @@ def edit_good(request, good_id):
         formset = GoodImageFormSet(request.POST, request.FILES, instance=good)
         good.name = request.POST.get('name')
         good.description = request.POST.get('description')
+        good.moderate = 0
         good.save()
         formset.save()
-        redirect_url = reverse("list_goods")
+        redirect_url = reverse("list_ads")
         return HttpResponseRedirect(redirect_url)
     else:
         good = Good.objects.get(id=good_id)
@@ -321,3 +325,22 @@ def disapprove_ad(request, ad_id):
 
     return render(request, 'moderate_ad.html', context)
 
+def list_anon(request):
+    customer = request.user
+    if request.user.is_authenticated:
+        goods = Good.objects.filter(status_id=1, moderate=1).order_by('-date', '-id')
+        ads = Advertisement.objects.filter(moderate=1).order_by('-sdate')
+        context = {'goods': goods,
+                   'customer': customer,
+                   'ads': ads,
+                   }
+        return render(request, 'list_all.html', context)
+    else:
+        goods = Good.objects.filter(status_id=1, moderate=1).order_by('-date', '-id')
+        ads = Advertisement.objects.filter(moderate=1).order_by('-sdate')
+        context = {'goods': goods,
+                   'customer': customer,
+                   'ads': ads,
+                   }
+
+        return render(request, 'list_anon.html', context)

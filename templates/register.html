@@ -1,13 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Регистрация нового пользователя</title>
-    <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
-    <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/png" sizes="16x16">
-    <link rel="stylesheet" href="{% static 'css/simple.css' %}">
-</head>
-<body>
+{% extends "base.html" %}
+    {% block title %}Регистрация нового пользователя{% endblock %}
+
+{% block content %}
     <h1>Регистрация</h1>
     <form method="post" action="{% url 'register' %}">
         {% csrf_token %}
@@ -15,5 +9,4 @@
         <input type="submit" value="Зарегистрироваться">
         <input type=button value="Назад" onClick="javascript:history.go(-1);">
     </form>
-</body>
-</html>
+{% endblock %}
