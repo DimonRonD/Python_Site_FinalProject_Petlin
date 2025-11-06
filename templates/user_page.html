@@ -1,17 +1,19 @@
 {% extends "base.html" %}
-    {% block title %}Список ваших предложений{% endblock %}
+    {% block title %}Страница пользователя {{ user_name }}{% endblock %}
 
 {% block content %}
 {% include "header.html" %}
     {% load static %}
     {% csrf_token %}
+    <h1>Страница пользователя {{ user_name }}</h1>
+    <hr align="center" color="blue">
     {% for good in goods %}
-        <h1>
+        <h2>
              Название товара: {{ good.name }}
-         </h1>
+         </h2>
          <h4>Товарная категория: {{ good.category }}</h4>
         <p><b>Описание товара:</b> {{ good.description }}</p>
-        <p><i>Автор: <a href="/user_page/{{ good.customer.id }}">{{ good.customer }}</a></i></p>
+        <p><i>Автор: {{ good.customer }}</i></p>
         <div class="gallery">
         {% for image in good.images.all %}
                 <a href="{{ image.image.url }}" target="blank"><img src="{{ image.image.url }}" style="width: auto; height: 100px;"></a>

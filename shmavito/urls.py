@@ -6,8 +6,8 @@ from . import views
 
 urlpatterns = [
     path('favicon.ico', RedirectView.as_view(url=staticfiles_storage.url('images/favicon.ico'))),
-    path("", views.list_anon, name="list_anon"),
-    path("redirect", views.list_anon, name="redirect"),
+    path("", views.listing, name="listing"),
+    path("redirect", views.listing, name="redirect"),
     path("auth", views.auth_site, name="auth"),
     path("logout", views.auth_logout, name="logout"),
     path('register', views.register, name='register'),
@@ -19,10 +19,12 @@ urlpatterns = [
     path('delete_ad/<int:ad_id>', views.delete_ad, name='delete_ad'),
     path('list_goods', views.list_goods, name='list_goods'),
     path('list_ads', views.list_ads, name='list_ads'),
+    path('listing', views.listing, name='listing'),
     path('moder_good', views.moder_good, name='moder_good'),
     path('approve_good/<int:good_id>', views.approve_good, name='approve_good'),
     path('disapprove_good/<int:good_id>', views.disapprove_good, name='disapprove_good'),
     path('moder_ad', views.moder_ad, name='moder_ad'),
     path('approve_ad/<int:ad_id>', views.approve_ad, name='approve_ad'),
     path('disapprove_ad/<int:ad_id>', views.disapprove_ad, name='disapprove_ad'),
+    path('user_page/<int:user_id>', views.user_page, name='user_page'),
 ]

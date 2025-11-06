@@ -8,8 +8,8 @@
     {% for good in goods %}
         <h1>
              Название товара: {{ good.name }}
-         </h1>
-         <h4>Товарная категория: {{ good.category }}</h4>
+        </h1>
+        <h4>Товарная категория: {{ good.category }}</h4>
         <p><b>Описание товара:</b> {{ good.description }}</p>
         <p><i>Автор: {{ good.customer }}</i></p>
         <div class="gallery">
@@ -19,21 +19,16 @@
         </div>
                 <br>
         <table><tr><td colspan="2" style="border: none; padding: 3pt;">Предложения на товаре:</td></tr><tr>
-       {% for adv in good.adv.all %}
-          {% if adv.good.id == good.id %}
-              {% if adv.moderate == 1 %}
-                <td style="border: none; padding: 3pt; background-color: #F0FFF0; width: 50%;">
-              {% elif adv.moderate == 0 %}
-                <td style="border: none; padding: 3pt; background-color: #FFF8DC; width: 50%;">
-              {% else %}
-                <td style="border: none; padding: 3pt; background-color: #FFF0F0; width: 50%;">
-              {% endif %}
+       {% for ad in ads %}
+          {% if ad.good.id == good.id %}
+            <td style="border: none; padding: 3pt; width: 50%;">
+
             <table style="border: 1px solid blue; border-collapse: collapse; ">
-            <tr><td style="border: none; padding: 3pt;">Название:</td><td style="border: none; padding: 3pt;"> <i>{{ adv.name }}</i></td></tr>
-            <tr><td style="border: none; padding: 3pt;">Описание предложения:</td><td style="border: none; padding: 3pt;"> <i>{{ adv.description }}</i></td></tr>
-            <tr><td style="border: none; padding: 3pt;">Начало:</td><td style="border: none; padding: 3pt;"> {{ adv.sdate }}</td></tr>
-            <tr><td style="border: none; padding: 3pt;">Конец:</td><td style="border: none; padding: 3pt;"> {{ adv.edate }}</td></tr>
-            <tr><td style="border: none; padding: 3pt;">Стоимость:</td><td style="border: none; padding: 3pt;"> <b>{{ adv.price }}</b> руб/сутки</td></tr>
+            <tr><td style="border: none; padding: 3pt;">Название:</td><td style="border: none; padding: 3pt;"> <i>{{ ad.name }}</i></td></tr>
+            <tr><td style="border: none; padding: 3pt;">Описание предложения:</td><td style="border: none; padding: 3pt;"> <i>{{ ad.description }}</i></td></tr>
+            <tr><td style="border: none; padding: 3pt;">Начало:</td><td style="border: none; padding: 3pt;"> {{ ad.sdate }}</td></tr>
+            <tr><td style="border: none; padding: 3pt;">Конец:</td><td style="border: none; padding: 3pt;"> {{ ad.edate }}</td></tr>
+            <tr><td style="border: none; padding: 3pt;">Стоимость:</td><td style="border: none; padding: 3pt;"> <b style="color: red;">~~~</b> руб/сутки <i  style="color: red; font-size: 0.75em;">(чтобы увидеть цену вам надо авторизоваться)</i></td></tr>
             </table></td>
 
           {% endif %}
@@ -43,6 +38,7 @@
             <p style="color: red;">Для того, чтобы откликнуться на объявление вам надо авторизоваться</p>
         </td></tr></table>
                     <hr align="center" color="blue">
+
     {% endfor %}
 
 {% endblock %}

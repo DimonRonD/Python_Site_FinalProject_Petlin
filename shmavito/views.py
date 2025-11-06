@@ -1,5 +1,5 @@
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotAllowed
-from django.db.models import Q, Sum, F
+from django.db.models import Q, Sum, F, Exists, OuterRef
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.contrib.auth import authenticate, login, logout
@@ -16,7 +16,8 @@ def auth_site(request):
             try:
                 user = authenticate(request, username=form.cleaned_data["email"], password=form.cleaned_data["password"])
                 login(request, user)
-                redirect_url = reverse("list_ads")    # reverse("list_goods")
+                print(user)
+                redirect_url = reverse("listing")    # reverse("list_goods")
                 return HttpResponseRedirect(redirect_url)
             except Exception as e:
                 return HttpResponse(f"Нихера не вышло {e}")
@@ -325,22 +326,61 @@ def disapprove_ad(request, ad_id):
 
     return render(request, 'moderate_ad.html', context)
 
-def list_anon(request):
-    customer = request.user
+def listing(request):
     if request.user.is_authenticated:
-        goods = Good.objects.filter(status_id=1, moderate=1).order_by('-date', '-id')
-        ads = Advertisement.objects.filter(moderate=1).order_by('-sdate')
+        customer = request.user
+        ads_subquery = Advertisement.objects.filter(moderate=1, good=OuterRef('pk'))
+
+        goods = Good.objects.annotate(
+            has_ads=Exists(ads_subquery)
+        ).filter(
+            status_id=1,
+            moderate=1,
+            has_ads=True
+        ).order_by('-date', '-id')
+
+        ads = Advertisement.objects.filter(moderate=1, good__in=goods).order_by('-sdate')
         context = {'goods': goods,
                    'customer': customer,
                    'ads': ads,
                    }
         return render(request, 'list_all.html', context)
     else:
-        goods = Good.objects.filter(status_id=1, moderate=1).order_by('-date', '-id')
-        ads = Advertisement.objects.filter(moderate=1).order_by('-sdate')
+        ads_subquery = Advertisement.objects.filter(moderate=1, good=OuterRef('pk'))
+
+        goods = Good.objects.annotate(
+            has_ads=Exists(ads_subquery)
+        ).filter(
+            status_id=1,
+            moderate=1,
+            has_ads=True
+        ).order_by('-date', '-id')
+
+        ads = Advertisement.objects.filter(moderate=1, good__in=goods).order_by('-sdate')
         context = {'goods': goods,
-                   'customer': customer,
                    'ads': ads,
                    }
 
         return render(request, 'list_anon.html', context)
+
+def user_page(request, user_id):
+    user_name = Customer.objects.get(id=user_id)
+    print(user_name)
+    ads_subquery = Advertisement.objects.filter(moderate=1, customer=user_id, good=OuterRef('pk'))
+
+    goods = Good.objects.annotate(
+        has_ads=Exists(ads_subquery)
+    ).filter(
+        status_id=1,
+        moderate=1,
+        customer=user_id,
+        has_ads=True
+    ).order_by('-date', '-id')
+
+    ads = Advertisement.objects.filter(moderate=1, customer=user_id, good__in=goods).order_by('-sdate')
+    context = {'goods': goods,
+               'user_name': user_name,
+               'ads': ads,
+               }
+
+    return render(request, 'user_page.html', context)

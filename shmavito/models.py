@@ -15,6 +15,7 @@ class City(models.Model):
     def __str__(self):
         return self.name
 
+
 class Customer(AbstractUser):
     city = models.ForeignKey(City, on_delete=models.PROTECT, related_name='customers', verbose_name='Город')
     phone = models.CharField(max_length=15, verbose_name='Номер телефона')
@@ -22,9 +23,16 @@ class Customer(AbstractUser):
     tg_id = models.IntegerField(verbose_name='ID в Telegram', null=True)
     status = models.ForeignKey(CustomerStatus, on_delete=models.PROTECT, related_name='customers', verbose_name='Статус пользователя', default=1)
     isModerator = models.BooleanField(default=False, verbose_name='Пользователь является модератором')
+    rating = models.DecimalField(decimal_places=2, max_digits=3, verbose_name='Рейтинг пользователя', default=3)
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
+
+class CustomerScore(models.Model):
+    score = models.IntegerField( verbose_name='Оценка')
+    date = models.DateField(verbose_name='Дата простановки оценки', auto_now=True)
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, verbose_name='Пользователь', related_name='customer_rating')
+    buyer = models.ForeignKey(Customer, on_delete=models.CASCADE, verbose_name='Покупатель', related_name='buyer_rating')
 
 class GoodCategory(models.Model):
     name = models.CharField(max_length=25, verbose_name='Категория товара', default='Одежда')
@@ -88,7 +96,9 @@ class Order(models.Model):
 
 class Comment(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='comments', verbose_name='Пользователь')
+    buyer = models.ForeignKey(Customer, on_delete=models.CASCADE, verbose_name='Покупатель', related_name='buyer_comment')
     ad = models.ForeignKey(Advertisement, on_delete=models.CASCADE, related_name='comments', null=True, verbose_name='Предложение')
     comment = models.TextField(null = False, verbose_name='Комментарий')
     photo = models.ImageField(null=True, verbose_name='Фотография к комментарию')
+    score = models.ForeignKey(CustomerScore, on_delete=models.PROTECT, related_name='comments', verbose_name='Оценка пользователя')
 
