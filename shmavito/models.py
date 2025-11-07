@@ -101,4 +101,5 @@ class Comment(models.Model):
     comment = models.TextField(null = False, verbose_name='Комментарий')
     photo = models.ImageField(null=True, verbose_name='Фотография к комментарию')
     score = models.ForeignKey(CustomerScore, on_delete=models.PROTECT, related_name='comments', verbose_name='Оценка пользователя')
+    moderate = models.IntegerField(default=0, verbose_name='Модерация комментария')
 
