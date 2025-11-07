@@ -1,3 +1,4 @@
+from datetime import datetime
 from django import forms
 from django.core import validators
 from django.forms import ModelForm, inlineformset_factory
@@ -63,16 +64,6 @@ class AddAd(ModelForm):
                 status_id=1
             ).order_by('-date')
 
-    # category = forms.ModelChoiceField(
-    #     queryset=GoodCategory.objects.all(),
-    #     label="Категория товара"
-    # )
-    #
-    # good = forms.ModelChoiceField(
-    #     queryset=Good.objects.none(),
-    #     label="Ваши товары"
-    # )
-
     class Meta:
         model = Advertisement
         fields = ['name', 'description', 'sdate', 'edate', 'price']
@@ -80,32 +71,6 @@ class AddAd(ModelForm):
             'sdate': forms.DateInput(attrs={'type': 'date'}),
             'edate': forms.DateInput(attrs={'type': 'date'}),
         }
-
-class Order(ModelForm):
-    """
-    Динамическое ограничение (например, от текущей даты)
-Если ограничение зависит от текущей даты или других условий:
-
-python
-import datetime
-from django import forms
-
-class MyForm(forms.Form):
-    today = datetime.date.today()
-    next_month = today + datetime.timedelta(days=30)
-
-    sdate = forms.DateField(
-        widget=forms.DateInput(
-            attrs={
-                'type': 'date',
-                'min': today.isoformat(),
-                'max': next_month.isoformat(),
-            }
-        )
-    )
-Это создаст календарь, где пользователь может выбирать даты только в течение следующих 30 дней
-    """
-    pass
 
 class EditAd(ModelForm):
     def __init__(self, *args, **kwargs):
@@ -161,3 +126,77 @@ class EditGood(ModelForm):
     class Meta:
         model = Good
         fields = ['name', 'category', 'good', 'description']
+
+class MakeOrder(ModelForm):
+    max_days = 1
+    def __init__(self, *args, **kwargs):
+        self.customer = kwargs.pop('customer', None)
+        self.edate = kwargs.pop('edate', None)
+        self.sdate = kwargs.pop('sdate', None)
+        super().__init__(*args, **kwargs)
+
+        if self.customer:
+            self.fields['good'].queryset = Good.objects.filter(
+                customer=self.customer,
+                status_id=1
+            ).order_by('-date')
+
+        if self.sdate and self.edate:
+            sdate_str = self.sdate.strftime('%Y-%m-%d') if hasattr(self.sdate, 'strftime') else str(self.sdate)
+            edate_str = self.edate.strftime('%Y-%m-%d') if hasattr(self.edate, 'strftime') else str(self.edate)
+            start = self.sdate if not isinstance(self.sdate, str) else datetime.strptime(self.sdate, '%Y-%m-%d').date()
+            end = self.edate if not isinstance(self.edate, str) else datetime.strptime(self.edate, '%Y-%m-%d').date()
+            delta = (end - start).days + 1
+            max_days = max(delta, 1)
+
+            self.fields['sdate'].widget.attrs.update({
+                'type': 'date',
+                'min': sdate_str,
+                'max': edate_str,
+            })
+
+            DAYS_CHOICES = [(i, str(i)) for i in range(1, max_days + 1)]
+            self.fields['days'].choices = DAYS_CHOICES
+            self.fields['days'].widget.attrs.update({
+                'min': 1,
+                'max': max_days,
+            })
+
+    days = forms.ChoiceField(
+        label="Количество дней",
+        choices=[],
+        required=True,
+    )
+
+    category = forms.ModelChoiceField(
+        queryset=GoodCategory.objects.all(),
+        label="Категория товара"
+    )
+
+    good = forms.ModelChoiceField(
+        queryset=Good.objects.none(),
+        label="Ваши товары"
+    )
+
+    # def clean(self):
+    #     cleaned_data = super().clean()
+    #     sdate = cleaned_data.get('sdate')
+    #     # edate = cleaned_data.get('edate')
+    #     if sdate and edate:
+    #         if sdate < self.sdate or edate > self.edate:
+    #             raise forms.ValidationError('Даты должны быть в диапазоне от {} до {}'.format(self.sdate, self.edate))
+    #         if edate < sdate:
+    #             raise forms.ValidationError('Дата окончания должна быть не раньше даты начала')
+    #     return cleaned_data
+
+
+    class Meta:
+        model = Advertisement
+        fields = ['name', 'category', 'good', 'description', 'sdate',  'price', 'days']
+        labels = {
+            'sdate': 'Выберите дату начала аренды',
+        }
+        widgets = {
+            'sdate': forms.DateInput(format=('%Y-%m-%d'), attrs={'type': 'date'}),
+            # 'edate': forms.DateInput(format=('%Y-%m-%d'), attrs={'type': 'date'}),
+        }

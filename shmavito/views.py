@@ -1,3 +1,6 @@
+import copy
+from datetime import datetime, timedelta
+
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotAllowed
 from django.db.models import Q, Sum, F, Exists, OuterRef
 from django.shortcuts import render, redirect
@@ -5,7 +8,8 @@ from django.urls import reverse
 from django.contrib.auth import authenticate, login, logout
 
 from .models import Good, City, Advertisement, Order, Customer, CustomerStatus, OrderStatus, OrderStatus, GoodImage, ImageStatus
-from .forms import LoginForm, RegisterForm, AddGood, GoodImageFormSet, AddAd, EditAd, EditGood
+from .forms import LoginForm, RegisterForm, AddGood, GoodImageFormSet, AddAd, EditAd, EditGood, MakeOrder
+
 
 # Create your views here.
 
@@ -130,7 +134,6 @@ def add_good(request):
             if not formset.is_valid():
                 errors.append(f"Формы изображений: {formset.non_form_errors()} {formset.errors}")
 
-            print(errors)  # Логируем ошибки
             return HttpResponse("Ошибки при заполнении формы.<br>" + "<br>".join(errors))
     else:
         form = AddGood()
@@ -384,3 +387,74 @@ def user_page(request, user_id):
                }
 
     return render(request, 'user_page.html', context)
+
+def make_order(request, ad_id):
+
+    customer = request.user
+    if request.method == 'POST':
+        adds = Advertisement.objects.get(id=ad_id)
+        order_sdate = datetime.strptime(request.POST.get('sdate'), "%Y-%m-%d").date()
+        order_days = int(request.POST.get('days'))
+        calculated_edate = order_sdate + timedelta(days=order_days)
+        if calculated_edate > adds.edate:
+            redirect_url = reverse("make_order", args=[ad_id])
+            error_msg = 'Вы выбрали количество дней, превышающее срок аренды'
+            context = {'error': error_msg}
+            return HttpResponseRedirect(redirect_url)
+        order_status = OrderStatus.objects.get(id=1)
+        order = Order.objects.create(
+            ad = adds,
+            customer = customer,
+            order_date = datetime.now(),
+            sdate = order_sdate,
+            edate = calculated_edate,
+            status = order_status,
+        )
+        if order_sdate == adds.sdate and calculated_edate == adds.edate:
+            adds.delete()
+            redirect_url = reverse("my_order")
+            return HttpResponseRedirect(redirect_url)
+        elif order_sdate > adds.sdate:
+            adds_copy = copy.deepcopy(adds)
+            adds.edate = order_sdate + timedelta(days=1)
+            adds.save()
+            if calculated_edate < adds_copy.edate:
+                adds_copy.sdate = calculated_edate + timedelta(days=1)
+                adds_copy.save()
+                redirect_url = reverse("my_order")
+                return HttpResponseRedirect(redirect_url)
+            redirect_url = reverse("my_order")
+            return HttpResponseRedirect(redirect_url)
+        elif order_sdate == adds.sdate and calculated_edate < adds.edate:
+            adds.sdate = calculated_edate + timedelta(days=1)
+            adds.save()
+            redirect_url = reverse("my_order")
+            return HttpResponseRedirect(redirect_url)
+        return HttpResponse(f"Что-то не так с датами<br> sdate: {adds.sdate} edate: {adds.edate}<br> order_sdate: {order_sdate} calculated_edate: {calculated_edate}<br> days: {order_days}")
+    else:
+        adds = Advertisement.objects.get(id=ad_id)
+        good = adds.good
+        form = MakeOrder(
+            customer=customer,
+            sdate=adds.sdate,
+            edate=adds.edate,
+            initial={
+                'name': adds.name,
+                'category': good.category,  # или конкретный ID
+                'good': good,
+                'description': adds.description,
+                'price': adds.price,
+                'sdate': adds.sdate,
+            }
+        )
+        form.fields['name'].disabled = True
+        form.fields['category'].disabled = True
+        form.fields['good'].disabled = True
+        form.fields['description'].disabled = True
+        form.fields['price'].disabled = True
+
+        context = {'goods': good,
+                   'ads': adds,
+                   'form': form,
+                   }
+        return render(request, 'make_order.html', context)

@@ -4,17 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="32c8a2b1-18d5-4b78-8e26-53110b02d040" name="Изменения" comment="FEATURE: added logaut function. Added goods list for unauthorised users">
-      <change afterPath="$PROJECT_DIR$/templates/user_page.html" afterDir="false" />
+    <list default="true" id="32c8a2b1-18d5-4b78-8e26-53110b02d040" name="Изменения" comment="FEATURE: prepare to Rating and Score system, nake models and fields">
+      <change afterPath="$PROJECT_DIR$/templates/make_order.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Readme.md" beforeDir="false" afterPath="$PROJECT_DIR$/Readme.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/shmavito/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/shmavito/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/shmavito/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/shmavito/forms.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/shmavito/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/shmavito/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/shmavito/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/shmavito/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/auth.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/auth.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/header.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/header.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/list_all.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/list_all.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/list_anon.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/list_anon.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -222,7 +219,15 @@
       <option name="project" value="LOCAL" />
       <updated>1762425211024</updated>
     </task>
-    <option name="localTasksCounter" value="17" />
+    <task id="LOCAL-00017" summary="FEATURE: prepare to Rating and Score system, nake models and fields">
+      <option name="closed" value="true" />
+      <created>1762435824426</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1762435824426</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -259,6 +264,7 @@
     <MESSAGE value="FEATURE: added base.html, static/css, styles on all [ages" />
     <MESSAGE value="FEATURE: added page, views and urls for moderate ads and goods. Added icons." />
     <MESSAGE value="FEATURE: added logaut function. Added goods list for unauthorised users" />
-    <option name="LAST_COMMIT_MESSAGE" value="FEATURE: added logaut function. Added goods list for unauthorised users" />
+    <MESSAGE value="FEATURE: prepare to Rating and Score system, nake models and fields" />
+    <option name="LAST_COMMIT_MESSAGE" value="FEATURE: prepare to Rating and Score system, nake models and fields" />
   </component>
 </project>
