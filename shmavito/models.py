@@ -69,6 +69,12 @@ class GoodImage(models.Model):
     image = models.ImageField(verbose_name='Фотография товара')
     status =models.ForeignKey(ImageStatus, on_delete=models.PROTECT, related_name='images', default=1, verbose_name='Статус фотографии')
 
+class AdvertisementStatus(models.Model):
+    name = models.CharField(max_length=25, verbose_name='Статус предложения')
+
+    def __str__(self):
+        return self.name
+
 class Advertisement(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.PROTECT, related_name='adv', verbose_name='Пользователь')
     good = models.ForeignKey(Good, on_delete=models.PROTECT, related_name='adv', verbose_name='Товар')
@@ -79,9 +85,10 @@ class Advertisement(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name='Стоимость одного дня предложения')
     moderate = models.IntegerField(default=0, verbose_name='Ожидает модерацию')
     city = models.ForeignKey(City, on_delete=models.PROTECT, related_name='adv', verbose_name='Город')
+    status = models.ForeignKey(AdvertisementStatus, on_delete=models.PROTECT, related_name='advs', verbose_name='Статус предложения', default=1)
 
 class OrderStatus(models.Model):
-    name = models.CharField(max_length=50, verbose_name='Статус предложения')
+    name = models.CharField(max_length=50, verbose_name='Статус заказа')
 
     def __str__(self):
         return self.name
@@ -93,6 +100,7 @@ class Order(models.Model):
     status = models.ForeignKey(OrderStatus, on_delete=models.PROTECT, related_name='orders', verbose_name='Статус заказа')
     sdate = models.DateField(verbose_name='Дата начала заказа')
     edate = models.DateField(verbose_name='Дата окончания заказа')
+    price = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name='Стоимость заказа')
 
 class Comment(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='comments', verbose_name='Пользователь')

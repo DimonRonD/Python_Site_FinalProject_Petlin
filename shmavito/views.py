@@ -7,7 +7,8 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.contrib.auth import authenticate, login, logout
 
-from .models import Good, City, Advertisement, Order, Customer, CustomerStatus, OrderStatus, OrderStatus, GoodImage, ImageStatus
+from .models import Good, City, Advertisement, Order, Customer, CustomerStatus, OrderStatus, OrderStatus, GoodImage, \
+    ImageStatus, AdvertisementStatus
 from .forms import LoginForm, RegisterForm, AddGood, GoodImageFormSet, AddAd, EditAd, EditGood, MakeOrder
 
 
@@ -176,11 +177,10 @@ def edit_good(request, good_id):
 
 
 def list_goods(request):
-    customer1 = request.user
-    goods = Good.objects.all().filter(customer=6, status_id=1).order_by('-date')
+    customer = request.user
+    goods = Good.objects.all().filter(customer=customer).order_by('-date')
     context = {'goods': goods,
-               'customer': request.user.id,
-               'cuscus': customer1,
+               'customer': customer,
                }
 
     return render(request, 'list_goods.html', context)
@@ -332,7 +332,7 @@ def disapprove_ad(request, ad_id):
 def listing(request):
     if request.user.is_authenticated:
         customer = request.user
-        ads_subquery = Advertisement.objects.filter(moderate=1, good=OuterRef('pk'))
+        ads_subquery = Advertisement.objects.filter(moderate=1, status=1, good=OuterRef('pk'))
 
         goods = Good.objects.annotate(
             has_ads=Exists(ads_subquery)
@@ -342,7 +342,7 @@ def listing(request):
             has_ads=True
         ).order_by('-date', '-id')
 
-        ads = Advertisement.objects.filter(moderate=1, good__in=goods).order_by('-sdate')
+        ads = Advertisement.objects.filter(moderate=1, status=1, good__in=goods).order_by('-sdate')
         context = {'goods': goods,
                    'customer': customer,
                    'ads': ads,
@@ -395,7 +395,8 @@ def make_order(request, ad_id):
         adds = Advertisement.objects.get(id=ad_id)
         order_sdate = datetime.strptime(request.POST.get('sdate'), "%Y-%m-%d").date()
         order_days = int(request.POST.get('days'))
-        calculated_edate = order_sdate + timedelta(days=order_days)
+        order_days_for_date = order_days - 1                    # надо уменьшать на один день, так как стартовая дата уже один день
+        calculated_edate = order_sdate + timedelta(days=order_days_for_date)
         if calculated_edate > adds.edate:
             redirect_url = reverse("make_order", args=[ad_id])
             error_msg = 'Вы выбрали количество дней, превышающее срок аренды'
@@ -409,26 +410,35 @@ def make_order(request, ad_id):
             sdate = order_sdate,
             edate = calculated_edate,
             status = order_status,
+            price = adds.price * order_days
         )
         if order_sdate == adds.sdate and calculated_edate == adds.edate:
-            adds.delete()
-            redirect_url = reverse("my_order")
-            return HttpResponseRedirect(redirect_url)
-        elif order_sdate > adds.sdate:
-            adds_copy = copy.deepcopy(adds)
-            adds.edate = order_sdate + timedelta(days=1)
+            adds.status = AdvertisementStatus.objects.get(id=2)
             adds.save()
-            if calculated_edate < adds_copy.edate:
-                adds_copy.sdate = calculated_edate + timedelta(days=1)
-                adds_copy.save()
-                redirect_url = reverse("my_order")
-                return HttpResponseRedirect(redirect_url)
-            redirect_url = reverse("my_order")
+            redirect_url = reverse("my_orders")
             return HttpResponseRedirect(redirect_url)
-        elif order_sdate == adds.sdate and calculated_edate < adds.edate:
-            adds.sdate = calculated_edate + timedelta(days=1)
+        elif order_sdate > adds.sdate:                        # Если дата начала заказа  больше даты начала предложения
+            adds_copy = copy.copy(adds)
+            adds_copy.pk = None
+            adds_copy.edate = order_sdate - timedelta(days=1) # Дата начала предложения сохраняется, дата конца предложения = дата начала заказа - 1 день
+            adds_copy.save()
+            if calculated_edate < adds.edate:                   # Если дата конца заказа меньше даты конца предложения
+                adds_copy2 = copy.copy(adds)
+                adds_copy2.pk = None
+                adds_copy2.sdate = calculated_edate + timedelta(days=1) # Дата начала нового предложения равна дата конца заказа + 1 день
+                adds_copy2.save()
+            adds.status = AdvertisementStatus.objects.get(id=3)
             adds.save()
-            redirect_url = reverse("my_order")
+            redirect_url = reverse("my_orders")
+            return HttpResponseRedirect(redirect_url)
+        elif order_sdate == adds.sdate and calculated_edate < adds.edate:   # Если дата начала заказа равна дате начала предложения и дата конца заказа меньше даты конца предложения
+            adds_copy3 = copy.copy(adds)
+            adds_copy3.pk = None
+            adds_copy3.sdate = calculated_edate + timedelta(days=1)   # дата начала предложения равна дате конца заказа + 1 день
+            adds_copy3.save()
+            adds.status = AdvertisementStatus.objects.get(id=3)
+            adds.save()
+            redirect_url = reverse("my_orders")
             return HttpResponseRedirect(redirect_url)
         return HttpResponse(f"Что-то не так с датами<br> sdate: {adds.sdate} edate: {adds.edate}<br> order_sdate: {order_sdate} calculated_edate: {calculated_edate}<br> days: {order_days}")
     else:
@@ -458,3 +468,22 @@ def make_order(request, ad_id):
                    'form': form,
                    }
         return render(request, 'make_order.html', context)
+
+def my_orders(request):
+    customer = request.user
+    orders = Order.objects.all().filter(customer=customer).order_by('-order_date')
+    # advs = Advertisement.objects.all().filter(customer=customer)
+    # goods = Good.objects.all().filter(customer=customer)
+    adv_ids = orders.values_list('ad_id', flat=True).distinct()
+    advs = Advertisement.objects.filter(id__in=adv_ids)
+
+    good_ids = advs.values_list('good_id', flat=True).distinct()
+    goods = Good.objects.filter(id__in=good_ids)
+
+    context = {'goods': goods,
+               'customer': customer,
+               'orders': orders,
+               'advs': advs,
+               }
+
+    return render(request, 'my_orders.html', context)

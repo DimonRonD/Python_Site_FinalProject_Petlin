@@ -28,4 +28,5 @@ urlpatterns = [
     path('disapprove_ad/<int:ad_id>', views.disapprove_ad, name='disapprove_ad'),
     path('user_page/<int:user_id>', views.user_page, name='user_page'),
     path('make_order/<int:ad_id>', views.make_order, name='make_order'),
+    path('my_orders', views.my_orders, name='my_orders'),
 ]
