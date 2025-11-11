@@ -1,10 +1,12 @@
 from datetime import datetime
+from django.utils import timezone
+from django.db.models import Avg
 from django import forms
 from django.core import validators
 from django.forms import ModelForm, inlineformset_factory
 from django.template.context_processors import request
 
-from .models import Good, Customer, City, GoodCategory, Advertisement, GoodImage, ImageStatus
+from .models import Good, Customer, City, GoodCategory, Advertisement, GoodImage, ImageStatus, CustomerScore, Comment
 
 class LoginForm(ModelForm):
     class Meta:
@@ -200,3 +202,51 @@ class MakeOrder(ModelForm):
             'sdate': forms.DateInput(format=('%Y-%m-%d'), attrs={'type': 'date'}),
             # 'edate': forms.DateInput(format=('%Y-%m-%d'), attrs={'type': 'date'}),
         }
+
+
+SCORE_CHOICES = [(i, str(i)) for i in range(1, 6)]
+
+class CommentForm(forms.Form):
+    score_value = forms.ChoiceField(choices=SCORE_CHOICES, widget=forms.RadioSelect, label='Оценка')
+    comment = forms.CharField(widget=forms.Textarea(attrs={'rows':3}), required=False, label='Комментарий')
+    photo = forms.ImageField(required=False, label='Фотография к комментарию')
+
+    def __init__(self, *args, **kwargs):
+        self.customer = kwargs.pop('customer')
+        self.buyer = kwargs.pop('buyer')
+        self.ad = kwargs.pop('ad', None)
+        super().__init__(*args, **kwargs)
+
+    def save(self):
+        score_val = int(self.cleaned_data['score_value'])
+
+        # Создаем новую оценку
+        score_obj = CustomerScore.objects.create(
+            score=score_val,
+            date=timezone.now().date(),
+            customer=self.customer,
+            buyer=self.buyer
+        )
+
+        # Если комментарий есть, создаем Comment
+        comment_text = self.cleaned_data.get('comment')
+        photo = self.cleaned_data.get('photo')
+        if comment_text or photo:
+            Comment.objects.create(
+                customer=self.customer,
+                buyer=self.buyer,
+                ad=self.ad,
+                comment=comment_text,
+                photo=photo,
+                score=score_obj,
+                moderate=0
+            )
+
+        # Обновляем средний рейтинг пользователя
+        avg_rating = CustomerScore.objects.filter(customer=self.customer).aggregate(avg=Avg('score'))['avg']
+        print(avg_rating)
+        if avg_rating is not None:
+            self.customer.rating = round(avg_rating, 2)  # округляем до 2 знаков
+            self.customer.save(update_fields=['rating'])
+
+        return score_obj

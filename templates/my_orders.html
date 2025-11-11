@@ -7,39 +7,53 @@
     <h2>Это ваши заказы, {{ customer }}</h2>
     {% csrf_token %}
     {% for good in goods %}
+        <table>
+        <tr><td colspan="2">
+            <h3>Название товара: {{ good.name }}</h3>
+            <h4>Товарная категория: {{ good.category }}</h4>
+            <p><b>Описание товара:</b> {{ good.description }}</p>
+            {% load rating_color %}
 
-        <h3>Название товара: {{ good.name }}</h3>
-        <h4>Товарная категория: {{ good.category }}</h4>
-        <p><b>Описание товара:</b> {{ good.description }}</p>
-        <p><i>Автор: <a href="/user_page/{{ good.customer.id }}">{{ good.customer }}</a></i></p>
-        <div class="gallery">
-        {% for image in good.images.all %}
-                <a href="{{ image.image.url }}" target="blank"><img src="{{ image.image.url }}" style="width: auto; height: 100px;"></a>
+            <p>
+              <i>Автор: <a href="/user_page/{{ good.customer.id }}">{{ good.customer }}</a> Rating
+                <span style="{% rating_color good.customer.rating %}">{{ good.customer.rating }}</span>
+              </i>
+            </p>
+            <div class="gallery">
+            {% for image in good.images.all %}
+                    <a href="{{ image.image.url }}" target="blank"><img src="{{ image.image.url }}" style="width: auto; height: 100px;"></a>
+            {% endfor %}
+            </div>
+        </td></tr>
+           {% for adv in advs %}
+              {% if adv.good.id == good.id %}
+        <tr><td>
+                <table style="border: none; border-collapse: collapse; ">
+                <tr><td style="border: none; padding: 3pt;">Название:</td><td style="border: none; padding: 3pt;"> <i>{{ adv.name }}</i></td></tr>
+                <tr><td style="border: none; padding: 3pt;">Описание предложения:</td><td style="border: none; padding: 3pt;"> <i>{{ adv.description }}</i></td></tr>
+                <tr><td style="border: none; padding: 3pt;">Начало:</td><td style="border: none; padding: 3pt;"> {{ adv.sdate }}</td></tr>
+                <tr><td style="border: none; padding: 3pt;">Конец:</td><td style="border: none; padding: 3pt;"> {{ adv.edate }}</td></tr>
+                <tr><td style="border: none; padding: 3pt;">Стоимость:</td><td style="border: none; padding: 3pt;"> <b>{{ adv.price }}</b> руб/сутки</td></tr>
+                </table>
+        </td>
+        <td>
+                    {% for order in orders %}
+                        {% if adv.id == order.ad.id %}
+                            <table style="border: none; border-collapse: collapse; ">
+                            <tr><td style="border: none; padding: 3pt; text-align: right" colspan="2"><a href="/order/{{ order.id }}">Заказ №{{ order.id }} от {{ order.order_date }}</a></td></tr>
+                            <tr><td style="border: none; padding: 3pt;">Начало:</td><td style="border: none; padding: 3pt;"> {{ order.sdate }}</td></tr>
+                            <tr><td style="border: none; padding: 3pt;">Конец:</td><td style="border: none; padding: 3pt;"> {{ order.edate }}</td></tr>
+                            <tr><td style="border: none; padding: 3pt;">Стоимость:</td><td style="border: none; padding: 3pt;"> <b>{{ order.price }}</b> руб</td></tr>
+                            <tr><td style="border: none; padding: 3pt; text-align: right" colspan="2"> <a href="/cancel_order">Отменить заказ</a></td></tr>
+                            </table>
+                        {% endif %}
+                    {% endfor %}
+              {% endif %}
+
+
+
         {% endfor %}
-        </div>
-
-       {% for adv in advs %}
-          {% if adv.good.id == good.id %}
-
-            <table style="border: 1px solid blue; border-collapse: collapse; ">
-            <tr><td style="border: none; padding: 3pt;">Название:</td><td style="border: none; padding: 3pt;"> <i>{{ adv.name }}</i></td></tr>
-            <tr><td style="border: none; padding: 3pt;">Описание предложения:</td><td style="border: none; padding: 3pt;"> <i>{{ adv.description }}</i></td></tr>
-            <tr><td style="border: none; padding: 3pt;">Начало:</td><td style="border: none; padding: 3pt;"> {{ adv.sdate }}</td></tr>
-            <tr><td style="border: none; padding: 3pt;">Конец:</td><td style="border: none; padding: 3pt;"> {{ adv.edate }}</td></tr>
-            <tr><td style="border: none; padding: 3pt;">Стоимость:</td><td style="border: none; padding: 3pt;"> <b>{{ adv.price }}</b> руб/сутки</td></tr>
-            <tr><td style="border: none; padding: 3pt;" colspan="2"><a href="/make_order/{{ adv.id }}">Заказать</a></td></tr>
-            </table>
-                {% for order in orders %}
-                    {% if adv.id == order.ad.id %}
-                        <p>{{ order.id }} {{ order.ad.name }}</p>
-                        <p>{{ order.sdate }} {{ order.edate }}</p>
-                    {% endif %}
-                {% endfor %}
-          {% endif %}
-
-
-
-       {% endfor %}
+        </td></tr></table>
         <hr>
     {% endfor %}
 

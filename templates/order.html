@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+    {% block title %}Список ваших предложений{% endblock %}
+
+{% block content %}
+
+{% include "header.html" %}
+    <h2>Информация по заказу №{{ order.id }} от {{ order.order_date }}</h2>
+    {% csrf_token %}
+        <table>
+        <tr><td colspan="2">
+            <h3>Название товара: {{ good.name }}</h3>
+            <h4>Товарная категория: {{ good.category }}</h4>
+            <p><b>Описание товара:</b> {{ good.description }}</p>
+            <p><i>Автор: <a href="/user_page/{{ good.customer.id }}">{{ good.customer }}</a></i></p>
+            <div class="gallery">
+            {% for image in good.images.all %}
+                    <a href="{{ image.image.url }}" target="blank"><img src="{{ image.image.url }}" style="width: auto; height: 100px;"></a>
+            {% endfor %}
+            </div>
+        </td></tr>
+        <tr><td>
+                <table style="border: none; border-collapse: collapse; ">
+                <tr><td style="border: none; padding: 3pt;">Название:</td><td style="border: none; padding: 3pt;"> <i>{{ adv.name }}</i></td></tr>
+                <tr><td style="border: none; padding: 3pt;">Описание предложения:</td><td style="border: none; padding: 3pt;"> <i>{{ adv.description }}</i></td></tr>
+                <tr><td style="border: none; padding: 3pt;">Начало:</td><td style="border: none; padding: 3pt;"> {{ adv.sdate }}</td></tr>
+                <tr><td style="border: none; padding: 3pt;">Конец:</td><td style="border: none; padding: 3pt;"> {{ adv.edate }}</td></tr>
+                <tr><td style="border: none; padding: 3pt;">Стоимость:</td><td style="border: none; padding: 3pt;"> <b>{{ adv.price }}</b> руб/сутки</td></tr>
+                </table>
+        </td>
+        <td>
+
+        <table style="border: none; border-collapse: collapse; ">
+        <tr><td style="border: none; padding: 3pt; text-align: right" colspan="2"><a href="/order">Заказ №{{ order.id }} от {{ order.order_date }}</a></td></tr>
+        <tr><td style="border: none; padding: 3pt;">Начало:</td><td style="border: none; padding: 3pt;"> {{ order.sdate }}</td></tr>
+        <tr><td style="border: none; padding: 3pt;">Конец:</td><td style="border: none; padding: 3pt;"> {{ order.edate }}</td></tr>
+        <tr><td style="border: none; padding: 3pt;">Стоимость:</td><td style="border: none; padding: 3pt;"> <b>{{ order.price }}</b> руб</td></tr>
+        <tr><td style="border: none; padding: 3pt; text-align: right" colspan="2"> <a href="/cancel_order">Отменить заказ</a></td></tr>
+        </table>
+
+        </td></tr></table>
+        <hr>
+<form action="" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div>
+        <label>{{ form.score_value.label }}</label>
+        <div style="display: flex; gap: 15px; align-items: center;">
+            {% for radio in form.score_value %}
+                <label style="display: flex; flex-direction: column; align-items: center; cursor: pointer;">
+                    {{ radio.tag }}
+                    <span>{{ radio.choice_label }}</span>
+                </label>
+            {% endfor %}
+        </div>
+    </div>
+    <div>
+        {{ form.comment.label_tag }}<br>
+        {{ form.comment }}
+    </div>
+    <div>
+        {{ form.photo.label_tag }}<br>
+        {{ form.photo }}
+    </div>
+    <button type="submit">Отправить</button>
+</form>
+
+
+
+{% endblock %}

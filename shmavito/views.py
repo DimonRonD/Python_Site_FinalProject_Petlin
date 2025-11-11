@@ -9,7 +9,7 @@ from django.contrib.auth import authenticate, login, logout
 
 from .models import Good, City, Advertisement, Order, Customer, CustomerStatus, OrderStatus, OrderStatus, GoodImage, \
     ImageStatus, AdvertisementStatus
-from .forms import LoginForm, RegisterForm, AddGood, GoodImageFormSet, AddAd, EditAd, EditGood, MakeOrder
+from .forms import LoginForm, RegisterForm, AddGood, GoodImageFormSet, AddAd, EditAd, EditGood, MakeOrder, CommentForm
 
 
 # Create your views here.
@@ -487,3 +487,44 @@ def my_orders(request):
                }
 
     return render(request, 'my_orders.html', context)
+
+def cancel_order(request, order_id):
+    pass
+
+def order(request, order_id):
+    customer = request.user
+    order = Order.objects.get(customer=customer, id=order_id)
+    adv = Advertisement.objects.get(id=order.ad.id)
+    good = Good.objects.get(id=adv.good.id)
+
+    if request.method == 'POST':
+        form = CommentForm(request.POST, request.FILES, customer=good.customer, buyer=customer, ad=adv)
+        if form.is_valid():
+            form.save()
+            # Делайте перенаправление или нужный ответ
+    else:
+        form = CommentForm(customer=good.customer, buyer=customer, ad=adv)
+
+    context = {'good': good,
+               'customer': customer,
+               'order': order,
+               'adv': adv,
+               'form': form,
+               }
+
+    return render(request, 'order.html', context)
+
+def comment(request, order_id):
+    customer = request.user
+    buyer = Customer.objects.get(id=buyer_id)
+    ad = Advertisement.objects.get(id=ad_id) if ad_id else None
+
+    if request.method == 'POST':
+        form = CommentForm(request.POST, request.FILES, customer=customer, buyer=buyer, ad=ad)
+        if form.is_valid():
+            form.save()
+            # Делайте перенаправление или нужный ответ
+    else:
+        form = CommentForm(customer=customer, buyer=buyer, ad=ad)
+
+    return render(request, 'your_template.html', {'form': form})
