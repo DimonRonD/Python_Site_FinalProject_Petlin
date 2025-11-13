@@ -4,14 +4,27 @@
 {% block content %}
 {% include "header.html" %}
     {% load static %}
+<form action="{% url 'listing' %}" method="get" enctype="multipart/form-data">
     {% csrf_token %}
+    <div style="display: flex; gap: 10px; align-items: center;">
+    {{ form.as_p }}
+        <p>&nbsp;<br><input type="submit" value="Искать!"/></p>
+    </div>
+
+  </form>
     {% for good in goods %}
         <h1>
              Название товара: {{ good.name }}
          </h1>
          <h4>Товарная категория: {{ good.category }}</h4>
         <p><b>Описание товара:</b> {{ good.description }}</p>
-        <p><i>Автор: <a href="/user_page/{{ good.customer.id }}">{{ good.customer }}</a></i></p>
+        {% load rating_color %}
+        <p>
+              <i>Автор: <a href="/user_page/{{ good.customer.id }}">{{ good.customer }}</a>
+                  <span style="font-size: 10pt;">Rating</span>
+                <span style="{% rating_color good.customer.rating %}; font-size: 10pt;">{{ good.customer.rating }}</span>
+              </i>
+            </p></p>
         <div class="gallery">
         {% for image in good.images.all %}
                 <a href="{{ image.image.url }}" target="blank"><img src="{{ image.image.url }}" style="width: auto; height: 100px;"></a>
@@ -25,6 +38,7 @@
             <table style="border: 1px solid blue; border-collapse: collapse; ">
             <tr><td style="border: none; padding: 3pt;">Название:</td><td style="border: none; padding: 3pt;"> <i>{{ adv.name }}</i></td></tr>
             <tr><td style="border: none; padding: 3pt;">Описание предложения:</td><td style="border: none; padding: 3pt;"> <i>{{ adv.description }}</i></td></tr>
+            <tr><td style="border: none; padding: 3pt;">Город:</td><td style="border: none; padding: 3pt;"> <i>{{ adv.city }}</i></td></tr>
             <tr><td style="border: none; padding: 3pt;">Начало:</td><td style="border: none; padding: 3pt;"> {{ adv.sdate }}</td></tr>
             <tr><td style="border: none; padding: 3pt;">Конец:</td><td style="border: none; padding: 3pt;"> {{ adv.edate }}</td></tr>
             <tr><td style="border: none; padding: 3pt;">Стоимость:</td><td style="border: none; padding: 3pt;"> <b>{{ adv.price }}</b> руб/сутки</td></tr>

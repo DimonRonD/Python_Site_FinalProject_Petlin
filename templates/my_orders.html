@@ -15,8 +15,9 @@
             {% load rating_color %}
 
             <p>
-              <i>Автор: <a href="/user_page/{{ good.customer.id }}">{{ good.customer }}</a> Rating
-                <span style="{% rating_color good.customer.rating %}">{{ good.customer.rating }}</span>
+              <i>Автор: <a href="/user_page/{{ good.customer.id }}">{{ good.customer }}</a>
+                  <span style="font-size: 10pt;">Rating</span>
+                <span style="{% rating_color good.customer.rating %}; font-size: 10pt;">{{ good.customer.rating }}</span>
               </i>
             </p>
             <div class="gallery">

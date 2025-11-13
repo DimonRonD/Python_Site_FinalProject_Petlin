@@ -11,7 +11,13 @@
             <h3>Название товара: {{ good.name }}</h3>
             <h4>Товарная категория: {{ good.category }}</h4>
             <p><b>Описание товара:</b> {{ good.description }}</p>
-            <p><i>Автор: <a href="/user_page/{{ good.customer.id }}">{{ good.customer }}</a></i></p>
+            {% load rating_color %}
+            <p>
+              <i>Автор: <a href="/user_page/{{ good.customer.id }}">{{ good.customer }}</a>
+                <span style="font-size: 10pt;">Rating</span>
+                <span style="{% rating_color good.customer.rating %}; font-size: 12pt;">{{ good.customer.rating }}</span>
+              </i>
+            </p>
             <div class="gallery">
             {% for image in good.images.all %}
                     <a href="{{ image.image.url }}" target="blank"><img src="{{ image.image.url }}" style="width: auto; height: 100px;"></a>

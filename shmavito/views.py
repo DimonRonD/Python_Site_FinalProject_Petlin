@@ -9,7 +9,7 @@ from django.contrib.auth import authenticate, login, logout
 
 from .models import Good, City, Advertisement, Order, Customer, CustomerStatus, OrderStatus, OrderStatus, GoodImage, \
     ImageStatus, AdvertisementStatus
-from .forms import LoginForm, RegisterForm, AddGood, GoodImageFormSet, AddAd, EditAd, EditGood, MakeOrder, CommentForm
+from .forms import LoginForm, RegisterForm, AddGood, GoodImageFormSet, AddAd, EditAd, EditGood, MakeOrder, CommentForm, AdvertisementSearchForm
 
 
 # Create your views here.
@@ -329,46 +329,9 @@ def disapprove_ad(request, ad_id):
 
     return render(request, 'moderate_ad.html', context)
 
-def listing(request):
-    if request.user.is_authenticated:
-        customer = request.user
-        ads_subquery = Advertisement.objects.filter(moderate=1, status=1, good=OuterRef('pk'))
-
-        goods = Good.objects.annotate(
-            has_ads=Exists(ads_subquery)
-        ).filter(
-            status_id=1,
-            moderate=1,
-            has_ads=True
-        ).order_by('-date', '-id')
-
-        ads = Advertisement.objects.filter(moderate=1, status=1, good__in=goods).order_by('-sdate')
-        context = {'goods': goods,
-                   'customer': customer,
-                   'ads': ads,
-                   }
-        return render(request, 'list_all.html', context)
-    else:
-        ads_subquery = Advertisement.objects.filter(moderate=1, good=OuterRef('pk'))
-
-        goods = Good.objects.annotate(
-            has_ads=Exists(ads_subquery)
-        ).filter(
-            status_id=1,
-            moderate=1,
-            has_ads=True
-        ).order_by('-date', '-id')
-
-        ads = Advertisement.objects.filter(moderate=1, good__in=goods).order_by('-sdate')
-        context = {'goods': goods,
-                   'ads': ads,
-                   }
-
-        return render(request, 'list_anon.html', context)
 
 def user_page(request, user_id):
     user_name = Customer.objects.get(id=user_id)
-    print(user_name)
     ads_subquery = Advertisement.objects.filter(moderate=1, customer=user_id, good=OuterRef('pk'))
 
     goods = Good.objects.annotate(
@@ -380,7 +343,7 @@ def user_page(request, user_id):
         has_ads=True
     ).order_by('-date', '-id')
 
-    ads = Advertisement.objects.filter(moderate=1, customer=user_id, good__in=goods).order_by('-sdate')
+    ads = Advertisement.objects.filter(moderate=1, customer=user_id, status=1, good__in=goods).order_by('-sdate')
     context = {'goods': goods,
                'user_name': user_name,
                'ads': ads,
@@ -528,3 +491,82 @@ def comment(request, order_id):
         form = CommentForm(customer=customer, buyer=buyer, ad=ad)
 
     return render(request, 'your_template.html', {'form': form})
+
+
+def listing(request):
+    if request.user.is_authenticated:
+        customer = request.user
+    else:
+        customer = None
+
+    form = AdvertisementSearchForm(request.GET or None)
+
+    ads_subquery = Advertisement.objects.filter(moderate=1, status=1, good=OuterRef('pk'))
+    goods = Good.objects.annotate(has_ads=Exists(ads_subquery)).filter(
+        status_id=1, moderate=1, has_ads=True
+    )
+    ads = Advertisement.objects.filter(moderate=1, status=1, good__in=goods)
+
+    # Получаем значения полей формы
+    keyword = form.data.get('keyword')
+    city = form.data.get('city')
+    price_min = form.data.get('price_min')
+    price_max = form.data.get('price_max')
+    category = form.data.get('category')
+    print(keyword, city, price_min, price_max, category)
+
+    # Проверка: хотя бы одно поле непустое
+    if any([
+        keyword and keyword.strip(),
+        city and city != '',
+        price_min and price_min != '',
+        price_max and price_max != '',
+        category and category != '',
+    ]):
+        if form.is_valid():
+            keyword = form.cleaned_data.get('keyword')
+            city = form.cleaned_data.get('city')
+            price_min = form.cleaned_data.get('price_min')
+            price_max = form.cleaned_data.get('price_max')
+            category = form.cleaned_data.get('category')
+
+            filter_qs = Q()
+            good_filter = Q()
+
+            # Поиск по Good (имя, описание, категория)
+            if keyword:
+                good_filter |= Q(name__icontains=keyword) | Q(description__icontains=keyword)
+            if category:
+                good_filter &= Q(category=category)
+
+            # ids товаров, подходящих по имени, описанию, категории
+            matched_good_ids = Good.objects.filter(good_filter).values_list('id', flat=True) if (keyword or category) else None
+
+            # Поиск по Advertisement (заголовок, описание + товары)
+            if matched_good_ids is not None:
+                filter_qs |= Q(good_id__in=matched_good_ids)
+            if keyword:
+                filter_qs |= Q(name__icontains=keyword) | Q(description__icontains=keyword)
+            if city:
+                filter_qs &= Q(city=city)
+            if price_min is not None:
+                filter_qs &= Q(price__gte=price_min)
+            if price_max is not None:
+                filter_qs &= Q(price__lte=price_max)
+
+            ads = ads.filter(filter_qs)
+            filtered_good_ids = ads.values_list('good_id', flat=True)
+            goods = goods.filter(id__in=filtered_good_ids)
+
+    ads = ads.order_by('-sdate')
+    goods = goods.order_by('-date', '-id')
+
+    context = {
+        'goods': goods,
+        'ads': ads,
+        'customer': customer,
+        'form': form,
+    }
+
+    template_name = 'list_all.html' if request.user.is_authenticated else 'list_anon.html'
+    return render(request, template_name, context)

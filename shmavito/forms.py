@@ -250,3 +250,20 @@ class CommentForm(forms.Form):
             self.customer.save(update_fields=['rating'])
 
         return score_obj
+
+class AdvertisementSearchForm(forms.Form):
+    keyword = forms.CharField(required=False, label='Ключевое слово')
+    city = forms.ModelChoiceField(queryset=City.objects.all(), required=False, label='Город')
+    price_min = forms.DecimalField(
+        required=False,
+        min_value=0,
+        label='Цена от',
+        widget=forms.NumberInput(attrs={'size': 5, 'style': 'width: 10ch;'})
+    )
+    price_max = forms.DecimalField(
+        required=False,
+        min_value=0,
+        label='Цена до',
+        widget=forms.NumberInput(attrs={'size': 5, 'style': 'width: 10ch;'})
+    )
+    category = forms.ModelChoiceField(queryset=GoodCategory.objects.all(), required=False, label='Категория товара')
