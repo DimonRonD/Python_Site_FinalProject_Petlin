@@ -400,7 +400,7 @@ details[open] > :last-child {
 /* Format tables */
 table {
   border-collapse: collapse;
-  margin: 1.5rem 0;
+  margin: 0.5rem 0;
 }
 
 figure > table {
@@ -559,7 +559,7 @@ input[type="file"] {
 hr {
   border: none;
   height: 1px;
-  width: 75vw;
+  width: 55vw;
   background: #0074D9; /* насыщенно-синий или свой */
   margin: 1rem auto;
 }

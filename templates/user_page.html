@@ -13,38 +13,65 @@
               </i>
             </p>
     <hr align="center" color="blue">
+    <table style="width: 90%; border-collapse: collapse; border: none; margin: 0 auto; table-layout: fixed;">
+        <tr><td style="width: 70%; border: none; padding: 0; overflow-wrap: break-word;">
     {% for good in goods %}
-        <h2>
-             Название товара: {{ good.name }}
-         </h2>
-         <h4>Товарная категория: {{ good.category }}</h4>
-        <p><b>Описание товара:</b> {{ good.description }}</p>
-        <div class="gallery">
-        {% for image in good.images.all %}
-                <a href="{{ image.image.url }}" target="blank"><img src="{{ image.image.url }}" style="width: auto; height: 100px;"></a>
-        {% endfor %}
-        </div>
-                <br>
-        <table><tr><td colspan="2" style="border: none; padding: 3pt;">Предложения на товаре:</td></tr><tr>
-       {% for adv in ads %}
-          {% if adv.good.id == good.id %}
-            <td style="border: none; padding: 3pt; width: 50%;">
-            <table style="border: 1px solid blue; border-collapse: collapse; ">
-            <tr><td style="border: none; padding: 3pt;">Название:</td><td style="border: none; padding: 3pt;"> <i>{{ adv.name }}</i></td></tr>
-            <tr><td style="border: none; padding: 3pt;">Описание предложения:</td><td style="border: none; padding: 3pt;"> <i>{{ adv.description }}</i></td></tr>
-            <tr><td style="border: none; padding: 3pt;">Город:</td><td style="border: none; padding: 3pt;"> <i>{{ adv.city }}</i></td></tr>
-            <tr><td style="border: none; padding: 3pt;">Начало:</td><td style="border: none; padding: 3pt;"> {{ adv.sdate }}</td></tr>
-            <tr><td style="border: none; padding: 3pt;">Конец:</td><td style="border: none; padding: 3pt;"> {{ adv.edate }}</td></tr>
-            <tr><td style="border: none; padding: 3pt;">Стоимость:</td><td style="border: none; padding: 3pt;"> <b>{{ adv.price }}</b> руб/сутки</td></tr>
-            </table></td>
-
-          {% endif %}
-
-       {% endfor %}
-        </tr><tr><td colspan="2" style="border: none; padding: 3pt;">
-            <p style="color: red;">User is authorised</p>
-        </td></tr></table>
-                    <hr align="center" color="blue">
+  <h2>Название товара: {{ good.name }}</h2>
+  <h4>Товарная категория: {{ good.category }}</h4>
+  <p><b>Описание товара:</b> {{ good.description }}</p>
+  <div class="gallery">
+    {% for image in good.images.all %}
+      <a href="{{ image.image.url }}" target="blank"><img src="{{ image.image.url }}" style="width: auto; height: 100px;"></a>
     {% endfor %}
+  </div>
+  <br>
 
+  <h3>Предложения на товар: {{ good.name }}</h3>
+  <table>
+    {% load custom_filters %}
+    {% with grouped_ads_by_good|get_item:good as ads_grouped %}
+      {% if ads_grouped %}
+        {% for pair in ads_grouped %}
+          <tr>
+            {% for adv in pair %}
+              {% if adv %}
+                <td style="border: none; padding: 3pt; width: 50%;">
+                  <table style="border: 1px solid blue; border-collapse: collapse;">
+                    <tr><td style="border: none; padding: 3pt;">Название:</td><td style="border: none; padding: 3pt;"><i>{{ adv.name }}</i></td></tr>
+                    <tr><td style="border: none; padding: 3pt;">Описание предложения:</td><td style="border: none; padding: 3pt;"><i>{{ adv.description }}</i></td></tr>
+                    <tr><td style="border: none; padding: 3pt;">Город:</td><td style="border: none; padding: 3pt;"><i>{{ adv.city }}</i></td></tr>
+                    <tr><td style="border: none; padding: 3pt;">Начало:</td><td style="border: none; padding: 3pt;">{{ adv.sdate }}</td></tr>
+                    <tr><td style="border: none; padding: 3pt;">Конец:</td><td style="border: none; padding: 3pt;">{{ adv.edate }}</td></tr>
+                    <tr><td style="border: none; padding: 3pt;">Стоимость:</td><td style="border: none; padding: 3pt;"><b>{{ adv.price }}</b> руб/сутки</td></tr>
+                  </table>
+                </td>
+              {% else %}
+                <td style="border: none; padding: 3pt; width: 50%;"></td>
+              {% endif %}
+            {% endfor %}
+          </tr>
+        {% endfor %}
+      {% else %}
+        <tr><td colspan="2">Нет предложений для этого товара.</td></tr>
+      {% endif %}
+    {% endwith %}
+  </table>
+<hr style="width: 250px; border: none; border-top: 1px solid blue;">
+{% endfor %}
+    </td>
+         <td style="width: 5%; border: none; padding: 0; background-color: #e6f0fa; ">
+      <!-- Пустая третья ячейка с бледно-голубым фоном и правой границей синим -->
+        </td>
+        <td style="width: 25%; border: none; padding: 0; overflow-wrap: break-word; vertical-align: top;">
+            <h3>Комментарии</h3>
+    {% for comment in comments %}
+        <table style="border: 1px solid blue; border-collapse: collapse; ">
+            <tr><td><b><i>Автор:</i></b></td><td>{{ comment.buyer }}</td></tr>
+            <tr><td><b><i>Дата:</i></b></td><td>{{ comment.date }}</td></tr>
+            <tr><td><b><i>Оценка:</i></b></td><td>{{ comment.score }}</td></tr>
+            <tr><td colspan="2"><b><i>Комментарий:</i></b><br>{{ comment.comment }}</td></tr>
+
+        </table>
+    {% endfor %}
+     </td></td></table>
 {% endblock %}

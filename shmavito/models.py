@@ -1,3 +1,5 @@
+import datetime
+
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
@@ -33,6 +35,9 @@ class CustomerScore(models.Model):
     date = models.DateField(verbose_name='Дата простановки оценки', auto_now=True)
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, verbose_name='Пользователь', related_name='customer_rating')
     buyer = models.ForeignKey(Customer, on_delete=models.CASCADE, verbose_name='Покупатель', related_name='buyer_rating')
+
+    def __str__(self):
+        return str(self.score)
 
 class GoodCategory(models.Model):
     name = models.CharField(max_length=25, verbose_name='Категория товара', default='Одежда')
@@ -109,5 +114,5 @@ class Comment(models.Model):
     comment = models.TextField(null = False, verbose_name='Комментарий')
     photo = models.ImageField(null=True, verbose_name='Фотография к комментарию')
     score = models.ForeignKey(CustomerScore, on_delete=models.PROTECT, related_name='comments', verbose_name='Оценка пользователя')
-    moderate = models.IntegerField(default=0, verbose_name='Модерация комментария')
+    date = models.DateField(verbose_name='Дата комментария', auto_now=True)
 

@@ -1,6 +1,6 @@
 import copy
 from datetime import datetime, timedelta
-
+from itertools import zip_longest
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotAllowed
 from django.db.models import Q, Sum, F, Exists, OuterRef
 from django.shortcuts import render, redirect
@@ -8,7 +8,7 @@ from django.urls import reverse
 from django.contrib.auth import authenticate, login, logout
 
 from .models import Good, City, Advertisement, Order, Customer, CustomerStatus, OrderStatus, OrderStatus, GoodImage, \
-    ImageStatus, AdvertisementStatus
+    ImageStatus, AdvertisementStatus, Comment
 from .forms import LoginForm, RegisterForm, AddGood, GoodImageFormSet, AddAd, EditAd, EditGood, MakeOrder, CommentForm, AdvertisementSearchForm
 
 
@@ -18,12 +18,16 @@ def auth_site(request):
     if request.method == 'POST':
         form = LoginForm(request.POST)
         if form.is_valid():
+            email = form.cleaned_data["email"]
             try:
                 user = authenticate(request, username=form.cleaned_data["email"], password=form.cleaned_data["password"])
                 login(request, user)
-                print(user)
-                redirect_url = reverse("listing")    # reverse("list_goods")
-                return HttpResponseRedirect(redirect_url)
+                customer = Customer.objects.get(username=email)
+                if customer.isModerator:
+                    return render(request, 'moderate_ad.html')
+                else:
+                    redirect_url = reverse("listing")
+                    return HttpResponseRedirect(redirect_url)
             except Exception as e:
                 return HttpResponse(f"Нихера не вышло {e}")
         else:
@@ -53,11 +57,9 @@ def auth_logout(request):
 def add_ad(request, good_id):
     customer = request.user
     good = Good.objects.get(id=good_id)
-    print(request.POST)
     if request.method == 'POST':
         form = AddAd(request.POST)
         if form.is_valid():
-            print('Enter to the Valid')
             ad = form.save(commit=False)  # создаём объект, но не сохраняем в БД
             ad.customer = request.user    # задаём автора объявления
             ad.city = request.user.city   # если требуется, копируем город пользователя
@@ -329,11 +331,14 @@ def disapprove_ad(request, ad_id):
 
     return render(request, 'moderate_ad.html', context)
 
+def chunked(iterable, n):
+    args = [iter(iterable)] * n
+    return list(zip_longest(*args, fillvalue=None))
 
 def user_page(request, user_id):
     user_name = Customer.objects.get(id=user_id)
     ads_subquery = Advertisement.objects.filter(moderate=1, customer=user_id, good=OuterRef('pk'))
-
+    comments = Comment.objects.filter(customer=user_id)
     goods = Good.objects.annotate(
         has_ads=Exists(ads_subquery)
     ).filter(
@@ -342,11 +347,17 @@ def user_page(request, user_id):
         customer=user_id,
         has_ads=True
     ).order_by('-date', '-id')
+    grouped_ads_by_good = {}
+    for good in goods:
+        ads = Advertisement.objects.filter(moderate=1, customer=user_id, status=1, good=good).order_by('-sdate')
+        ads_list = list(ads)
+        ads_grouped = chunked(ads_list, 2)
+        grouped_ads_by_good[good] = ads_grouped
 
-    ads = Advertisement.objects.filter(moderate=1, customer=user_id, status=1, good__in=goods).order_by('-sdate')
     context = {'goods': goods,
                'user_name': user_name,
-               'ads': ads,
+               'grouped_ads_by_good': grouped_ads_by_good,
+               'comments': comments,
                }
 
     return render(request, 'user_page.html', context)

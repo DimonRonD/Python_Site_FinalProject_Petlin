@@ -9,7 +9,7 @@
                 <p>Введите логин и пароль, если вы уже зарегистрированы.</p>
                 <p>Если вы еще не зарегистрированы, воспользуйтесь ссылкой ниже</p>
             </div>
-            <form class="login-form" id="loginForm" action="/auth" method="post">
+            <form class="login-form" id="loginForm" action="{% url 'auth' %}" method="post">
                 {% csrf_token %}
                 {{ form.as_p }}
 
