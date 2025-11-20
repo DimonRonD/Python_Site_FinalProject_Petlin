@@ -110,7 +110,7 @@ class Order(models.Model):
 class Comment(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='comments', verbose_name='Пользователь')
     buyer = models.ForeignKey(Customer, on_delete=models.CASCADE, verbose_name='Покупатель', related_name='buyer_comment')
-    ad = models.ForeignKey(Advertisement, on_delete=models.CASCADE, related_name='comments', null=True, verbose_name='Предложение')
+    good = models.ForeignKey(Good, on_delete=models.PROTECT, related_name='comments', verbose_name='Товар')
     comment = models.TextField(null = False, verbose_name='Комментарий')
     photo = models.ImageField(null=True, verbose_name='Фотография к комментарию')
     score = models.ForeignKey(CustomerScore, on_delete=models.PROTECT, related_name='comments', verbose_name='Оценка пользователя')

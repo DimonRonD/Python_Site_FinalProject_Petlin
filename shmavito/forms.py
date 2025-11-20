@@ -214,7 +214,7 @@ class CommentForm(forms.Form):
     def __init__(self, *args, **kwargs):
         self.customer = kwargs.pop('customer')
         self.buyer = kwargs.pop('buyer')
-        self.ad = kwargs.pop('ad', None)
+        self.good = kwargs.pop('good', None)
         super().__init__(*args, **kwargs)
 
     def save(self):
@@ -235,11 +235,10 @@ class CommentForm(forms.Form):
             Comment.objects.create(
                 customer=self.customer,
                 buyer=self.buyer,
-                ad=self.ad,
+                good=self.good,
                 comment=comment_text,
                 photo=photo,
                 score=score_obj,
-                moderate=0
             )
 
         # Обновляем средний рейтинг пользователя

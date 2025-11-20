@@ -472,19 +472,31 @@ def order(request, order_id):
     good = Good.objects.get(id=adv.good.id)
 
     if request.method == 'POST':
-        form = CommentForm(request.POST, request.FILES, customer=good.customer, buyer=customer, ad=adv)
+        form = CommentForm(request.POST, request.FILES, customer=good.customer, buyer=customer, good=good)
         if form.is_valid():
             form.save()
             # Делайте перенаправление или нужный ответ
     else:
-        form = CommentForm(customer=good.customer, buyer=customer, ad=adv)
-
-    context = {'good': good,
-               'customer': customer,
-               'order': order,
-               'adv': adv,
-               'form': form,
-               }
+        comments = Comment.objects.filter(good=good, buyer=customer).order_by('-date')
+        all_comments = Comment.objects.filter(good=good).order_by('-date')
+        if comments:
+            print(comment)
+            context = {'good': good,
+                       'customer': customer,
+                       'order': order,
+                       'already_commented': 'True',
+                       'comments': comments,
+                       'all_comments': all_comments,
+                       }
+        else:
+            form = CommentForm(customer=good.customer, buyer=customer, good=good)
+            context = {'good': good,
+                       'customer': customer,
+                       'order': order,
+                       'form': form,
+                       'already_commented': 'False',
+                       'all_comments': all_comments,
+                       }
 
     return render(request, 'order.html', context)
 
@@ -581,3 +593,16 @@ def listing(request):
 
     template_name = 'list_all.html' if request.user.is_authenticated else 'list_anon.html'
     return render(request, template_name, context)
+
+def show_good(request, good_id):
+    customer = request.user
+    good = Good.objects.get(id=good_id)
+    images = GoodImage.objects.filter(good=good)
+    comments = Comment.objects.filter(good=good).order_by('-date')
+    context = {
+        'customer': customer,
+        'good': good,
+        'images': images,
+        'comments': comments,
+    }
+    return render(request, 'good.html', context)

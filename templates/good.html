@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+    {% block title %}Описание товара{% endblock %}
+  {% block content %}
+{% include "header.html" %}
+  <h1>Описание товара</h1>
+
+    <h1>
+         Название товара: {{ good.name }}
+     </h1>
+     <h4>Товарная категория: {{ good.category }}</h4>
+    <p><b>Описание товара:</b> {{ good.description }}</p>
+    {% load rating_color %}
+    <p>
+          <i>Автор: <a href="/user_page/{{ good.customer.id }}">{{ good.customer }}</a>
+              <span style="font-size: 10pt;">Rating</span>
+            <span style="{% rating_color good.customer.rating %}; font-size: 10pt;">{{ good.customer.rating }}</span>
+          </i>
+        </p></p>
+    <div class="gallery">
+    {% for image in good.images.all %}
+            <a href="{{ image.image.url }}" target="blank"><img src="{{ image.image.url }}" style="width: auto; height: 100px;"></a>
+    {% endfor %}
+    </div>
+
+    <img src="{{ img_form.instance.image.url }}" width="120" />
+
+<h1>Комментарии к товару</h1>
+    {% if comments%}
+        {% for comment in comments %}
+            <table style="border: 1px solid blue; border-collapse: collapse; ">
+                <tr><td><b><i>Автор:</i></b></td><td>{{ comment.buyer }}</td></tr>
+                <tr><td><b><i>Дата:</i></b></td><td>{{ comment.date }}</td></tr>
+                <tr><td><b><i>Оценка:</i></b></td><td><span style="{% rating_color comment.score %}; font-size: 15pt;">{{ comment.score }}</span></td></tr>
+                <tr><td colspan="2"><b><i>Комментарий:</i></b><br>{{ comment.comment }}</td></tr>
+
+            </table>
+        {% endfor %}
+    {% else %}
+        <h3>Комментариев пока нет</h3>
+    {% endif %}
+
+  {% endblock %}

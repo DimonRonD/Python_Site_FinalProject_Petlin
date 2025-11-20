@@ -9,6 +9,7 @@
         <table>
         <tr><td colspan="2">
             <h3>Название товара: {{ good.name }}</h3>
+            <p><a href="good/{{ good.id }}">Комментарии к товару</a></p>
             <h4>Товарная категория: {{ good.category }}</h4>
             <p><b>Описание товара:</b> {{ good.description }}</p>
             {% load rating_color %}
@@ -36,7 +37,7 @@
         <td>
 
         <table style="border: none; border-collapse: collapse; ">
-        <tr><td style="border: none; padding: 3pt; text-align: right" colspan="2"><a href="/order">Заказ №{{ order.id }} от {{ order.order_date }}</a></td></tr>
+        <tr><td style="border: none; padding: 3pt; text-align: right" colspan="2">Заказ №{{ order.id }} от {{ order.order_date }}</td></tr>
         <tr><td style="border: none; padding: 3pt;">Начало:</td><td style="border: none; padding: 3pt;"> {{ order.sdate }}</td></tr>
         <tr><td style="border: none; padding: 3pt;">Конец:</td><td style="border: none; padding: 3pt;"> {{ order.edate }}</td></tr>
         <tr><td style="border: none; padding: 3pt;">Стоимость:</td><td style="border: none; padding: 3pt;"> <b>{{ order.price }}</b> руб</td></tr>
@@ -45,30 +46,50 @@
 
         </td></tr></table>
         <hr>
-<form action="" method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    <div>
-        <label>{{ form.score_value.label }}</label>
-        <div style="display: flex; gap: 15px; align-items: center;">
-            {% for radio in form.score_value %}
-                <label style="display: flex; flex-direction: column; align-items: center; cursor: pointer;">
-                    {{ radio.tag }}
-                    <span>{{ radio.choice_label }}</span>
-                </label>
-            {% endfor %}
+{% if already_commented %}
+    <h3>Ваш комментарий</h3>
+    {% for comment in comments %}
+        <table style="border: 1px solid blue; border-collapse: collapse; ">
+            <tr><td><b><i>Автор:</i></b></td><td>{{ comment.buyer }}</td></tr>
+            <tr><td><b><i>Дата:</i></b></td><td>{{ comment.date }}</td></tr>
+            <tr><td><b><i>Оценка:</i></b></td><td><span style="{% rating_color comment.score %}; font-size: 15pt;">{{ comment.score }}</span></td></tr>
+            <tr><td colspan="2"><b><i>Комментарий:</i></b><br>{{ comment.comment }}</td></tr>
+        </table>
+    {% endfor %}
+{% else %}
+    <h3>Вы можете оценить товар и оставить комментарий</h3>
+    <form action="" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div>
+            <label>{{ form.score_value.label }}</label>
+            <div style="display: flex; gap: 15px; align-items: center;">
+                {% for radio in form.score_value %}
+                    <label style="display: flex; flex-direction: column; align-items: center; cursor: pointer;">
+                        {{ radio.tag }}
+                        <span>{{ radio.choice_label }}</span>
+                    </label>
+                {% endfor %}
+            </div>
         </div>
-    </div>
-    <div>
-        {{ form.comment.label_tag }}<br>
-        {{ form.comment }}
-    </div>
-    <div>
-        {{ form.photo.label_tag }}<br>
-        {{ form.photo }}
-    </div>
-    <button type="submit">Отправить</button>
-</form>
+        <div>
+            {{ form.comment.label_tag }}<br>
+            {{ form.comment }}
+        </div>
+        <div>
+            {{ form.photo.label_tag }}<br>
+            {{ form.photo }}
+        </div>
+        <button type="submit">Отправить</button>
+    </form>
+{% endif %}
 
-
-
+    <h3>Все комментарии</h3>
+    {% for all_comment in all_comments %}
+        <table style="border: 1px solid blue; border-collapse: collapse; ">
+            <tr><td><b><i>Автор:</i></b></td><td>{{ all_comment.buyer }}</td></tr>
+            <tr><td><b><i>Дата:</i></b></td><td>{{ all_comment.date }}</td></tr>
+            <tr><td><b><i>Оценка:</i></b></td><td><span style="{% rating_color all_comment.score %}; font-size: 15pt;">{{ all_comment.score }}</span></td></tr>
+            <tr><td colspan="2"><b><i>Комментарий:</i></b><br>{{ all_comment.comment }}</td></tr>
+        </table>
+    {% endfor %}
 {% endblock %}
