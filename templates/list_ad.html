@@ -30,7 +30,7 @@
         </div>
                 <br>
         <table><tr><td colspan="2" style="border: none; padding: 3pt;">Ваши предложения на товаре:</td></tr><tr>
-       {% for adv in good.adv.all %}
+       {% for adv in ads %}
           {% if adv.good.id == good.id %}
               {% if adv.moderate == 1 %}
                 <td style="border: none; padding: 3pt; background-color: #F0FFF0; width: 50%;">

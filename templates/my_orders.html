@@ -47,7 +47,7 @@
                             <tr><td style="border: none; padding: 3pt;">Начало:</td><td style="border: none; padding: 3pt;"> {{ order.sdate }}</td></tr>
                             <tr><td style="border: none; padding: 3pt;">Конец:</td><td style="border: none; padding: 3pt;"> {{ order.edate }}</td></tr>
                             <tr><td style="border: none; padding: 3pt;">Стоимость:</td><td style="border: none; padding: 3pt;"> <b>{{ order.price }}</b> руб</td></tr>
-                            <tr><td style="border: none; padding: 3pt; text-align: right" colspan="2"> <a href="/cancel_order">Отменить заказ</a></td></tr>
+                            <tr><td style="border: none; padding: 3pt; text-align: right" colspan="2"> <a href="/cancel_order/{{ order.id }}/">Отменить заказ</a></td></tr>
                             </table>
                         {% endif %}
                     {% endfor %}

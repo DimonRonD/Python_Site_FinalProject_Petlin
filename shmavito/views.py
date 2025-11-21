@@ -190,7 +190,7 @@ def list_goods(request):
 def list_ads(request):
     customer = request.user.id
     goods = Good.objects.filter(customer=customer, status_id=1).order_by('-date', '-id')
-    ads = Advertisement.objects.filter(customer=customer).order_by('-sdate')
+    ads = Advertisement.objects.filter(customer=customer, status=1).order_by('-sdate')
     context = {'goods': goods,
                'customer': customer,
                'ads': ads,
@@ -445,7 +445,7 @@ def make_order(request, ad_id):
 
 def my_orders(request):
     customer = request.user
-    orders = Order.objects.all().filter(customer=customer).order_by('-order_date')
+    orders = Order.objects.all().filter(customer=customer, status=1).order_by('-order_date')
     # advs = Advertisement.objects.all().filter(customer=customer)
     # goods = Good.objects.all().filter(customer=customer)
     adv_ids = orders.values_list('ad_id', flat=True).distinct()
@@ -480,7 +480,6 @@ def order(request, order_id):
         comments = Comment.objects.filter(good=good, buyer=customer).order_by('-date')
         all_comments = Comment.objects.filter(good=good).order_by('-date')
         if comments:
-            print(comment)
             context = {'good': good,
                        'customer': customer,
                        'order': order,
@@ -536,7 +535,6 @@ def listing(request):
     price_min = form.data.get('price_min')
     price_max = form.data.get('price_max')
     category = form.data.get('category')
-    print(keyword, city, price_min, price_max, category)
 
     # Проверка: хотя бы одно поле непустое
     if any([
@@ -606,3 +604,69 @@ def show_good(request, good_id):
         'comments': comments,
     }
     return render(request, 'good.html', context)
+
+def cancel_order(request, order_id):
+    customer = request.user
+    order = Order.objects.get(customer=customer, id=order_id)
+    adv = Advertisement.objects.get(id=order.ad.id)
+    good = Good.objects.get(id=adv.good.id)
+
+    if request.method == "POST" and request.POST.get('confirm') == 'yes':
+        all_advs = Advertisement.objects.filter(good=good, status_id=1).exclude(id=adv.id)
+
+        # Соседние предложения: по датам именно +1/-1 день, чтобы найти только "крайние" блоки
+        prev_advs = all_advs.filter(edate=order.sdate - timedelta(days=1))
+        next_advs = all_advs.filter(sdate=order.edate + timedelta(days=1))
+
+        # Если есть хоть один сосед, делаем слияние
+        if prev_advs.exists() or next_advs.exists():
+            # Собираем диапазон
+            to_merge = list(prev_advs) + [adv] + list(next_advs)
+            new_sdate = min(a.sdate for a in to_merge)
+            new_edate = max(a.edate for a in to_merge)
+
+            # Создаём объединённое предложение
+            merged_adv = Advertisement.objects.create(
+                customer=adv.customer,
+                good=good,
+                sdate=new_sdate,
+                edate=new_edate,
+                name=adv.name,
+                description=adv.description,
+                price=adv.price,
+                moderate=1,
+                city=adv.city,
+                status_id=1,
+            )
+
+            # Переводим только участвовавшие предложения (prev_advs и next_advs) в статус 4
+            to_update_ids = [a.id for a in prev_advs] + [a.id for a in next_advs]
+            if to_update_ids:
+                Advertisement.objects.filter(id__in=to_update_ids, status_id=1).update(status_id=4)
+                updated = Advertisement.objects.filter(id__in=to_update_ids)
+        else:
+            # Нет соседей: просто создаём новое предложение, архивируем adv
+            Advertisement.objects.create(
+                customer=adv.customer,
+                good=good,
+                sdate=adv.sdate,
+                edate=adv.edate,
+                name=adv.name,
+                description=adv.description,
+                price=adv.price,
+                moderate=1,
+                city=adv.city,
+                status_id=1,
+            )
+
+        # Заказу статус "отменён"
+        order.status_id = 3
+        order.save()
+        return redirect('my_orders')
+
+    context = {
+        'order': order,
+        'adv': adv,
+        'good': good,
+    }
+    return render(request, 'cancel_order.html', context)

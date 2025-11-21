@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+    {% block title %}Список ваших предложений{% endblock %}
+
+{% block content %}
+
+{% include "header.html" %}
+    <h2>Подтверждение отмены заказа №{{ order.id }} от {{ order.order_date }}</h2>
+   <div>
+        <table>
+        <tr><td colspan="2">
+            <h3>Название товара: {{ good.name }}</h3>
+            <p><a href="good/{{ good.id }}">Комментарии к товару</a></p>
+            <h4>Товарная категория: {{ good.category }}</h4>
+            <p><b>Описание товара:</b> {{ good.description }}</p>
+            {% load rating_color %}
+            <p>
+              <i>Автор: <a href="/user_page/{{ good.customer.id }}">{{ good.customer }}</a>
+                <span style="font-size: 10pt;">Rating</span>
+                <span style="{% rating_color good.customer.rating %}; font-size: 12pt;">{{ good.customer.rating }}</span>
+              </i>
+            </p>
+            <div class="gallery">
+            {% for image in good.images.all %}
+                    <a href="{{ image.image.url }}" target="blank"><img src="{{ image.image.url }}" style="width: auto; height: 100px;"></a>
+            {% endfor %}
+            </div>
+        </td></tr></table>
+        <form method="post">
+            {% csrf_token %}
+            <p>Вы уверены, что хотите отказаться от заказа?</p>
+            <button type="submit" name="confirm" value="yes">Да</button>
+            <a href="{% url 'my_orders' %}">Назад</a>
+        </form>
+    </div>
+{% endblock %}
