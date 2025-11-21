@@ -86,7 +86,7 @@ DATABASES = {
         'NAME': 'shmavito',
         'USER': 'shoppy',
         'PASSWORD': 'shoppy',
-        'HOST': 'localhost',
+        'HOST': 'shmavito_db',
         'PORT': '5432',
     }
 }
@@ -128,7 +128,7 @@ USE_TZ = False
 
 STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_URL = 'static/'
-#STATIC_ROOT = "static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field

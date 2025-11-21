@@ -1,0 +1,28 @@
+services:
+  shmavito_db:
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_USER: shoppy
+      POSTGRES_PASSWORD: shoppy
+      POSTGRES_DB: shmavito
+    ports:
+      - 15434:5432
+    volumes:
+      - db-data:/var/lib/postgresql/data
+  shmavito_web:
+    build: .
+    command: >
+      sh -c "python manage.py migrate && python manage.py loaddata data.json && python manage.py collectstatic --no-input && python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - .:/shmavito
+    ports:
+      - "8000:8000"
+    depends_on:
+      - shmavito_db
+volumes:
+    db-data:
+
+
+
+

@@ -6,6 +6,20 @@
 
 e-mail — DimonRonD@gmail.com
 
+docker-compose up shmavito_db - для запуска контейнера с базой
+
+docker-compose up shmavito_web - для запуска web-сервера
+
+Выгрузка данных из базы: python manage.py dumpdata > data.json
+Загрузка данных в базу: python manage.py loaddata data.json
+
+python manage.py dumpdata shmavito.CustomerStatus >> data.json
+python manage.py dumpdata shmavito.City >> data.json
+python manage.py dumpdata shmavito.GoodStatus >> data.json
+python manage.py dumpdata shmavito.ImageStatus >> data.json
+python manage.py dumpdata shmavito.AdvertisementStatus >> data.json
+python manage.py dumpdata shmavito.OrderStatus >> data.json
+
 - [X] Схема базы, создание моделей
 - [X] Создание, редактирование, удаление товара
 - [X] Создание, редактирование, удаление предложения

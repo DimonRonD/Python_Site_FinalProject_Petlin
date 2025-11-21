@@ -1,0 +1,221 @@
+[
+  {
+    "model": "shmavito.customerstatus",
+    "pk": 1,
+    "fields": {
+      "name": "active"
+    }
+  },
+  {
+    "model": "shmavito.city",
+    "pk": 1,
+    "fields": {
+      "name": "Ростов-на-Дону"
+    }
+  },
+  {
+    "model": "shmavito.city",
+    "pk": 3,
+    "fields": {
+      "name": "Москва"
+    }
+  },
+  {
+    "model": "shmavito.city",
+    "pk": 4,
+    "fields": {
+      "name": "Самара"
+    }
+  },
+  {
+    "model": "shmavito.city",
+    "pk": 5,
+    "fields": {
+      "name": "Саратов"
+    }
+  },
+  {
+    "model": "shmavito.goodstatus",
+    "pk": 1,
+    "fields": {
+      "name": "Активно"
+    }
+  },
+  {
+    "model": "shmavito.goodstatus",
+    "pk": 2,
+    "fields": {
+      "name": "Снято"
+    }
+  },
+  {
+    "model": "shmavito.goodstatus",
+    "pk": 3,
+    "fields": {
+      "name": "Заблокировано"
+    }
+  },
+  {
+    "model": "shmavito.imagestatus",
+    "pk": 1,
+    "fields": {
+      "name": "Активно"
+    }
+  },
+  {
+    "model": "shmavito.imagestatus",
+    "pk": 2,
+    "fields": {
+      "name": "Выключено"
+    }
+  },
+  {
+    "model": "shmavito.advertisementstatus",
+    "pk": 1,
+    "fields": {
+      "name": "Активно"
+    }
+  },
+  {
+    "model": "shmavito.advertisementstatus",
+    "pk": 2,
+    "fields": {
+      "name": "Заказано целиком"
+    }
+  },
+  {
+    "model": "shmavito.advertisementstatus",
+    "pk": 3,
+    "fields": {
+      "name": "Заказано и разбито"
+    }
+  },
+  {
+    "model": "shmavito.advertisementstatus",
+    "pk": 4,
+    "fields": {
+      "name": "Осталось после возврата"
+    }
+  },
+  {
+    "model": "shmavito.orderstatus",
+    "pk": 1,
+    "fields": {
+      "name": "Создан"
+    }
+  },
+  {
+    "model": "shmavito.orderstatus",
+    "pk": 2,
+    "fields": {
+      "name": "Завершен"
+    }
+  },
+  {
+    "model": "shmavito.orderstatus",
+    "pk": 3,
+    "fields": {
+      "name": "Отменён"
+    }
+  },
+  {
+    "model": "shmavito.customer",
+    "pk": 5,
+    "fields": {
+      "password": "pbkdf2_sha256$1000000$6ACCht0JhdIO4TOE55f6iK$j1wL8v5Xpd4++4ENNngC2yG2ZDlKnLH38ouIDvSyJzI=",
+      "last_login": "2025-11-21T14:12:15.433",
+      "is_superuser": true,
+      "username": "admin",
+      "first_name": "",
+      "last_name": "",
+      "email": "admin@ad.min",
+      "is_staff": true,
+      "is_active": true,
+      "date_joined": "2025-10-17T14:48:02.061",
+      "city": 1,
+      "phone": "",
+      "tg_name": null,
+      "tg_id": null,
+      "status": 1,
+      "isModerator": false,
+      "rating": "3.00",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "shmavito.customer",
+    "pk": 6,
+    "fields": {
+      "password": "pbkdf2_sha256$1000000$a2o6YhnQGZR8h2vwG6QnlZ$Brf9IGR+Krcowata8kAjrEstZTaJRpEDttdyl37vEYc=",
+      "last_login": "2025-11-21T15:42:13.596",
+      "is_superuser": false,
+      "username": "ivan@iv.an",
+      "first_name": "Иван",
+      "last_name": "Иванов",
+      "email": "ivan@iv.an",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2025-10-21T10:00:53.875",
+      "city": 1,
+      "phone": "79998887766",
+      "tg_name": "",
+      "tg_id": null,
+      "status": 1,
+      "isModerator": false,
+      "rating": "4.20",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "shmavito.customer",
+    "pk": 7,
+    "fields": {
+      "password": "pbkdf2_sha256$1000000$cwIqfT3iJtUTpzXBDg4SJ6$9O9ud3dj2TmKEjsAxdYjWOp9tidXD+rHBdrC0xbIPV8=",
+      "last_login": "2025-11-21T15:42:38.141",
+      "is_superuser": false,
+      "username": "petr@iv.an",
+      "first_name": "Petr",
+      "last_name": "Petrov",
+      "email": "petr@iv.an",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2025-11-05T15:23:45.211",
+      "city": 4,
+      "phone": "88889997766",
+      "tg_name": "",
+      "tg_id": null,
+      "status": 1,
+      "isModerator": false,
+      "rating": "3.00",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "shmavito.customer",
+    "pk": 8,
+    "fields": {
+      "password": "pbkdf2_sha256$1000000$TiGORTwFyfvTbDTqgkVsGg$pKjBF2UJJZZfPN6K9iQ3PaRkVXXY7lRu3EOwGsnbg3U=",
+      "last_login": "2025-11-21T15:14:46.608",
+      "is_superuser": false,
+      "username": "moder@mo.der",
+      "first_name": "Moderator",
+      "last_name": "Portala",
+      "email": "moder@mo.der",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2025-11-18T13:50:52.930",
+      "city": 3,
+      "phone": "99876543322",
+      "tg_name": "",
+      "tg_id": null,
+      "status": 1,
+      "isModerator": true,
+      "rating": "3.00",
+      "groups": [],
+      "user_permissions": []
+    }
+  }
+]
