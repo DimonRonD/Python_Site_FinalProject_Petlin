@@ -9,7 +9,7 @@ services:
     ports:
       - 15434:5432
     volumes:
-      - db-data:/var/lib/postgresql/data
+      - db-data:/var/lib/postgresql
   shmavito_web:
     build: .
     command: >
