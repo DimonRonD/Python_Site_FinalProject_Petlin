@@ -7,6 +7,9 @@ RUN pip install -r requirements.txt
 
 COPY . /shmavito
 
+COPY wait-for-it.sh /shmavito/wait-for-it.sh
+RUN chmod +x /shmavito/wait-for-it.sh
+
 RUN python manage.py makemigrations
 
 EXPOSE 8000
