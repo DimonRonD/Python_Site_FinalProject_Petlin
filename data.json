@@ -217,5 +217,69 @@
       "groups": [],
       "user_permissions": []
     }
+  },
+  {
+    "model": "shmavito.goodcategory",
+    "pk": 1,
+    "fields": {
+      "name": "Брюки"
+    }
+  },
+  {
+    "model": "shmavito.goodcategory",
+    "pk": 2,
+    "fields": {
+      "name": "Рубашки"
+    }
+  },
+  {
+    "model": "shmavito.goodcategory",
+    "pk": 3,
+    "fields": {
+      "name": "Свитера"
+    }
+  },
+  {
+    "model": "shmavito.goodcategory",
+    "pk": 4,
+    "fields": {
+      "name": "Джинсы"
+    }
+  },
+  {
+    "model": "shmavito.goodcategory",
+    "pk": 5,
+    "fields": {
+      "name": "Платья"
+    }
+  },
+  {
+    "model": "shmavito.goodcategory",
+    "pk": 6,
+    "fields": {
+      "name": "Юбки"
+    }
+  },
+  {
+    "model": "shmavito.goodcategory",
+    "pk": 7,
+    "fields": {
+      "name": "Майки"
+    }
+  },
+  {
+    "model": "shmavito.goodcategory",
+    "pk": 8,
+    "fields": {
+      "name": "Куртки"
+    }
+  },
+  {
+    "model": "shmavito.goodcategory",
+    "pk": 9,
+    "fields": {
+      "name": "Пальто"
+    }
   }
+
 ]

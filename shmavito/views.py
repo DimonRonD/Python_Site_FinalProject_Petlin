@@ -60,6 +60,13 @@ def add_ad(request, good_id):
     if request.method == 'POST':
         form = AddAd(request.POST)
         if form.is_valid():
+            if form.cleaned_data["sdate"] >= form.cleaned_data["edate"]:
+                msg = 'Дата начала предложения должна быть меньше даты конца предложения'
+                context = {'form': form,
+                           'good': good,
+                           'msg': msg,
+                           }
+                return render(request, 'add_ad.html', context)
             ad = form.save(commit=False)  # создаём объект, но не сохраняем в БД
             ad.customer = request.user    # задаём автора объявления
             ad.city = request.user.city   # если требуется, копируем город пользователя
