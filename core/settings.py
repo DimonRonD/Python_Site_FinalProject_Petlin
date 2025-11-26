@@ -89,8 +89,8 @@ DATABASES = {
         'NAME': 'shmavito',
         'USER': 'shoppy',
         'PASSWORD': 'shoppy',
-        'HOST': 'shmavito_db',
-       # 'HOST': 'localhost',
+      #  'HOST': 'shmavito_db',
+        'HOST': 'localhost',
         'PORT': '5432',
     }
 }

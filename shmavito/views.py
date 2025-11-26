@@ -50,12 +50,16 @@ def register(request):
         context = {'form': form}
         return render(request, 'register.html', context)
 
+def faq(request):
+    customer = request.user
+    context = {'customer': customer}
+    return render(request, 'faq.html', context)
+
 def auth_logout(request):
     logout(request)
     return redirect('redirect')
 
 def add_ad(request, good_id):
-    customer = request.user
     good = Good.objects.get(id=good_id)
     if request.method == 'POST':
         form = AddAd(request.POST)
